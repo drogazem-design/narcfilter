@@ -322,6 +322,27 @@ a { color:var(--teal); }
 .option-a .option-label { color:var(--opt-a-bd); }
 .option-b .option-label { color:var(--opt-b-bd); }
 .option-c .option-label { color:var(--opt-c-bd); }
+.option-text-edit {
+  width:100%; box-sizing:border-box; display:block;
+  background:transparent; border:1px solid transparent;
+  border-radius:4px; resize:vertical;
+  font-size:0.92rem; line-height:1.6;
+  color:var(--text); font-family:inherit;
+  padding:4px 6px; margin-bottom:6px;
+  transition:border-color 0.15s;
+}
+.option-text-edit:focus {
+  outline:none; border-color:rgba(128,128,128,0.35);
+  background:rgba(0,0,0,0.04);
+}
+.option-copy-btn {
+  font-size:0.75rem; padding:3px 10px;
+  border:1px solid rgba(128,128,128,0.3);
+  border-radius:4px; background:transparent;
+  color:var(--text-muted); cursor:pointer;
+  transition:all 0.15s;
+}
+.option-copy-btn:hover { background:rgba(128,128,128,0.12); }
 
 /* ── WARM SECTION ────────────────────────────────────────────────────────────── */
 .section-warm {
@@ -622,7 +643,7 @@ const TRANSLATIONS = {
     note_label:'Twoja notatka (opcjonalna)',
     note_ph:'Kontekst, jak się czułeś/aś, co chcesz zapamiętać...',
     btn_save:'Zapisz do dziennika', btn_saved:'Zapisano ✓',
-    btn_export:'Kopiuj do schowka', btn_clear:'Wyczyść dziennik',
+    btn_export:'Kopiuj do schowka', btn_clear:'Wyczyść dziennik', btn_copy:'Kopiuj',
     empty_title:'Dziennik jest pusty',
     empty_sub:'Analizuj wiadomości i zapisuj je tutaj. Wszystko zostaje tylko na tym urządzeniu.',
     btn_delete:'Usuń', btn_show:'Pokaż analizę ▾', btn_hide:'Ukryj analizę ▴',
@@ -654,7 +675,7 @@ const TRANSLATIONS = {
     note_label:'Your note (optional)',
     note_ph:'Context, how you felt, what you want to remember...',
     btn_save:'Save to log', btn_saved:'Saved ✓',
-    btn_export:'Copy to clipboard', btn_clear:'Clear log',
+    btn_export:'Copy to clipboard', btn_clear:'Clear log', btn_copy:'Copy',
     empty_title:'Log is empty',
     empty_sub:'Analyze messages and save them here. Everything stays only on this device.',
     btn_delete:'Delete', btn_show:'Show analysis ▾', btn_hide:'Hide analysis ▴',
@@ -783,7 +804,10 @@ const Render = {
       if (opt) {
         html += `<div class="option-block option-${cls}">`;
         html += `<p class="option-label">${this.esc(opt.label ?? '')}</p>`;
-        if (opt.text) html += `<p>${this.esc(opt.text)}</p>`;
+        if (opt.text) {
+          html += `<textarea class="option-text-edit" rows="3">${this.esc(opt.text)}</textarea>`;
+          html += `<button class="option-copy-btn" onclick="copyOptionText(this)">${this.esc(I18n.t('btn_copy'))}</button>`;
+        }
         html += `</div>`;
       }
     }
@@ -1055,6 +1079,13 @@ const UI = {
 // ═══════════════════════════════════════════════════════════════════════════════
 // HELPERS
 // ═══════════════════════════════════════════════════════════════════════════════
+function copyOptionText(btn) {
+  const text = btn.previousElementSibling.value;
+  const p = navigator.clipboard?.writeText(text);
+  if (p) p.then(() => UI.toast(I18n.t('toast_copied'))).catch(() => Log._fallbackCopy(text));
+  else Log._fallbackCopy(text);
+}
+
 function fmtDate(iso) {
   const d = new Date(iso), p = n => String(n).padStart(2,'0');
   return `${p(d.getDate())}.${p(d.getMonth()+1)}.${d.getFullYear()} ${p(d.getHours())}:${p(d.getMinutes())}`;
