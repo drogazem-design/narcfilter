@@ -176,7 +176,8 @@ export default async function handler(req, res) {
     // Parse the JSON response from the model
     let parsed;
     try {
-      parsed = JSON.parse(rawText);
+      const jsonText = rawText.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
+      parsed = JSON.parse(jsonText);
     } catch {
       console.error('Failed to parse AI response as JSON:', rawText.slice(0, 200));
       return res.status(500).json({ error: 'AI returned an unexpected format. Please try again.' });
