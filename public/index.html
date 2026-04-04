@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>NarcFilter – Kompas Rozwodowy</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230f1923'/><path d='M16 4 L26 8 L26 18 C26 23.5 16 28 16 28 C16 28 6 23.5 6 18 L6 8 Z' fill='%2300c9a7'/><text x='16' y='22' text-anchor='middle' font-family='sans-serif' font-weight='bold' font-size='14' fill='white'>N</text></svg>" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet" />
@@ -486,6 +487,55 @@ a { color:var(--teal); }
 /* ── UTILS ───────────────────────────────────────────────────────────────────── */
 .hidden { display:none !important; }
 
+/* ── FOOTER ─────────────────────────────────────────────────────────────────── */
+.app-footer {
+  text-align:center; padding:16px 16px 32px;
+  color:var(--muted); font-size:0.78rem;
+}
+.footer-link {
+  color:var(--muted); text-decoration:none; opacity:0.65;
+  transition:opacity 0.15s;
+}
+.footer-link:hover { opacity:1; text-decoration:underline; }
+.footer-sep { margin:0 8px; opacity:0.35; }
+
+/* ── LEGAL MODAL ─────────────────────────────────────────────────────────────── */
+.legal-modal {
+  position:fixed; inset:0; z-index:900;
+  background:rgba(0,0,0,0.72); backdrop-filter:blur(4px);
+  display:flex; align-items:center; justify-content:center;
+  padding:20px;
+}
+.legal-modal-box {
+  background:var(--surface2); border:1px solid var(--border-hi);
+  border-radius:var(--radius); max-width:600px; width:100%;
+  max-height:82vh; display:flex; flex-direction:column;
+  box-shadow:var(--shadow);
+}
+.legal-modal-header {
+  display:flex; justify-content:flex-end;
+  padding:12px 16px 0; flex-shrink:0;
+}
+.legal-modal-close {
+  background:transparent; border:1px solid var(--border-hi);
+  border-radius:var(--radius-xs); color:var(--muted); cursor:pointer;
+  padding:4px 12px; font-size:0.8rem; transition:background 0.15s;
+}
+.legal-modal-close:hover { background:rgba(255,255,255,0.06); }
+.legal-modal-body {
+  overflow-y:auto; padding:4px 28px 28px; flex:1;
+}
+.legal-title {
+  font-family:'DM Serif Display',Georgia,serif;
+  font-size:1.15rem; color:var(--teal); margin-bottom:2px;
+}
+.legal-subtitle { font-size:0.8rem; color:var(--muted); margin-bottom:16px; }
+.legal-section {
+  font-weight:600; font-size:0.88rem; color:var(--text);
+  margin:16px 0 4px;
+}
+.legal-p { font-size:0.86rem; line-height:1.7; color:var(--text); margin-bottom:6px; }
+
 @media (min-width:640px) {
   .main-content { padding:24px 20px 88px; }
   .card { padding:26px; }
@@ -606,6 +656,22 @@ a { color:var(--teal); }
     </div>
 
   </main>
+
+  <footer class="app-footer">
+    <a href="#" class="footer-link" onclick="Legal.open('privacy');return false;" data-i18n="footer_privacy"></a>
+    <span class="footer-sep">·</span>
+    <a href="#" class="footer-link" onclick="Legal.open('terms');return false;" data-i18n="footer_terms"></a>
+  </footer>
+</div>
+
+<!-- LEGAL MODAL -->
+<div id="legal-modal" class="legal-modal hidden" role="dialog" aria-modal="true">
+  <div class="legal-modal-box">
+    <div class="legal-modal-header">
+      <button class="legal-modal-close" onclick="Legal.close()" data-i18n="btn_close"></button>
+    </div>
+    <div class="legal-modal-body" id="legal-content"></div>
+  </div>
 </div>
 
 <!-- LOADING OVERLAY -->
@@ -655,6 +721,8 @@ const TRANSLATIONS = {
     err_rate:'Limit zapytań przekroczony. Poczekaj chwilę.',
     err_api:'Błąd serwera. Spróbuj ponownie.',
     confirm_clear:'Wyczyścić cały dziennik? Tej operacji nie można cofnąć.',
+    footer_privacy:'Polityka prywatności', footer_terms:'Regulamin',
+    btn_close:'Zamknij',
     lbl_patterns:'Analiza wzorców',
     lbl_intent:'Co ta wiadomość próbuje osiągnąć',
     lbl_options:'Twoje opcje odpowiedzi',
@@ -687,6 +755,8 @@ const TRANSLATIONS = {
     err_rate:'Rate limit exceeded. Please wait.',
     err_api:'Server error. Please try again.',
     confirm_clear:'Clear the entire log? This cannot be undone.',
+    footer_privacy:'Privacy Policy', footer_terms:'Terms',
+    btn_close:'Close',
     lbl_patterns:'Pattern Analysis',
     lbl_intent:'What this message is trying to achieve',
     lbl_options:'Your response options',
@@ -746,6 +816,115 @@ const I18n = {
     document.getElementById('btn-pl').classList.toggle('active', S.lang === 'pl');
     document.getElementById('btn-en').classList.toggle('active', S.lang === 'en');
     document.documentElement.lang = S.lang;
+  },
+};
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// MODULE: Legal — Privacy Policy & Terms of Service
+// ═══════════════════════════════════════════════════════════════════════════════
+const Legal = {
+  TEXTS: {
+    pl: {
+      privacy: [
+        ['title',    'Polityka Prywatności'],
+        ['subtitle', 'NarcFilter — Moduł Kompas Rozwodowy · Ostatnia aktualizacja: kwiecień 2026'],
+        ['section',  '1. Administrator danych'],
+        ['p',        'Administratorem danych osobowych jest Integral Mindset Institute spółka z ograniczoną odpowiedzialnością (działająca pod marką Kompas Rozwodowy), z siedzibą w Pruszkowie, al. Niepodległości 4/78, 05-800 Pruszków, wpisana do rejestru przedsiębiorców KRS pod numerem 0000820154, NIP: 5342613837. Kontakt: integralmindset@gmail.com'],
+        ['section',  '2. Jakie dane przetwarzamy'],
+        ['p',        'Gdy wklejasz wiadomość do analizy, jej treść jest wysyłana do API firmy Anthropic (USA) wyłącznie w celu przeprowadzenia analizy. Nie przechowujemy tej treści na własnych serwerach.'],
+        ['p',        'Log incydentów jest przechowywany wyłącznie lokalnie w Twojej przeglądarce (localStorage). Nie mamy do niego dostępu.'],
+        ['p',        'Nie zbieramy adresów email, imion, danych logowania ani żadnych innych danych osobowych.'],
+        ['section',  '3. Anthropic API'],
+        ['p',        'Treść wiadomości trafia do Anthropic Inc. zgodnie z ich polityką prywatności: anthropic.com/privacy. Anthropic może przechowywać zapytania przez ograniczony czas zgodnie ze swoją polityką.'],
+        ['section',  '4. Pliki cookie'],
+        ['p',        'Aplikacja nie używa plików cookie. Dane są przechowywane wyłącznie w localStorage Twojej przeglądarki.'],
+        ['section',  '5. Twoje prawa (RODO)'],
+        ['p',        'Masz prawo do dostępu, sprostowania i usunięcia danych. Ponieważ nie przechowujemy Twoich danych, możesz je usunąć samodzielnie przez funkcję "Usuń wszystkie dane lokalne" w Ustawieniach aplikacji. W sprawach dotyczących danych osobowych możesz kontaktować się pod adresem: integralmindset@gmail.com'],
+        ['section',  '6. Zmiany polityki'],
+        ['p',        'O istotnych zmianach poinformujemy na stronie kompasrozwodowy.vercel.app.'],
+      ],
+      terms: [
+        ['title',    'Regulamin'],
+        ['subtitle', 'NarcFilter — Moduł Kompas Rozwodowy · Ostatnia aktualizacja: kwiecień 2026'],
+        ['section',  '1. Charakter narzędzia'],
+        ['p',        'NarcFilter jest narzędziem psychoedukacyjnym. Nie jest formą terapii, poradnictwa psychologicznego ani pomocy prawnej. Analizy generowane przez AI mają charakter informacyjny i nie stanowią diagnozy.'],
+        ['section',  '2. Użytkownik'],
+        ['p',        'Z narzędzia mogą korzystać osoby pełnoletnie (18+). Korzystając z NarcFilter akceptujesz niniejszy regulamin.'],
+        ['section',  '3. Ograniczenie odpowiedzialności'],
+        ['p',        'Integral Mindset Institute sp. z o.o. (działająca pod marką Kompas Rozwodowy) nie ponosi odpowiedzialności za decyzje podjęte na podstawie analiz wygenerowanych przez aplikację. W sytuacjach kryzysowych skontaktuj się ze specjalistą — psychologiem, prawnikiem lub służbami pomocowymi.'],
+        ['p',        'Integral Mindset Institute sp. z o.o. zobowiązuje się do starannego działania w zakresie dostarczania narzędzia, nie gwarantuje jednak osiągnięcia przez użytkownika określonych rezultatów w komunikacji z innymi osobami.'],
+        ['p',        'Integral Mindset Institute sp. z o.o. nie ponosi odpowiedzialności za utracone korzyści ani szkody pośrednie wynikające z korzystania z narzędzia.'],
+        ['section',  '4. Własność intelektualna'],
+        ['p',        'Nazwa NarcFilter, interfejs i system promptów są własnością Integral Mindset Institute sp. z o.o. Kopiowanie i reprodukowanie bez zgody jest zabronione.'],
+        ['section',  '5. Zmiany regulaminu'],
+        ['p',        'Zastrzegamy prawo do zmiany regulaminu. Aktualna wersja zawsze dostępna jest na stronie aplikacji.'],
+        ['section',  '6. Kontakt'],
+        ['p',        'Integral Mindset Institute sp. z o.o.'],
+        ['p',        'al. Niepodległości 4/78, 05-800 Pruszków'],
+        ['p',        'NIP: 5342613837 · KRS: 0000820154'],
+        ['p',        'integralmindset@gmail.com'],
+      ],
+    },
+    en: {
+      privacy: [
+        ['title',    'Privacy Policy'],
+        ['subtitle', 'NarcFilter — Kompas Rozwodowy Module · Last updated: April 2026'],
+        ['section',  '1. Data Controller'],
+        ['p',        'The data controller is Integral Mindset Institute spółka z ograniczoną odpowiedzialnością (trading as Kompas Rozwodowy), seated in Pruszków, al. Niepodległości 4/78, 05-800 Pruszków, Poland, registered in the National Court Register under KRS number 0000820154, NIP: 5342613837. Contact: integralmindset@gmail.com'],
+        ['section',  '2. What data we process'],
+        ['p',        'When you paste a message for analysis, its content is sent to Anthropic\'s API (USA) solely to perform the analysis. We do not store this content on our own servers.'],
+        ['p',        'Your incident log is stored locally in your browser (localStorage) only. We have no access to it.'],
+        ['p',        'We do not collect email addresses, names, login credentials, or any other personal data.'],
+        ['section',  '3. Anthropic API'],
+        ['p',        'Message content is processed by Anthropic Inc. under their privacy policy: anthropic.com/privacy. Anthropic may retain queries for a limited period per their policy.'],
+        ['section',  '4. Cookies'],
+        ['p',        'This application does not use cookies. Data is stored solely in your browser\'s localStorage.'],
+        ['section',  '5. Your rights (GDPR)'],
+        ['p',        'You have the right to access, correct, and delete your data. Since we do not store your data, you can delete it yourself using "Delete all local data" in the app Settings. For data-related inquiries contact: integralmindset@gmail.com'],
+        ['section',  '6. Policy changes'],
+        ['p',        'Material changes will be announced at kompasrozwodowy.vercel.app.'],
+      ],
+      terms: [
+        ['title',    'Terms of Service'],
+        ['subtitle', 'NarcFilter — Kompas Rozwodowy Module · Last updated: April 2026'],
+        ['section',  '1. Nature of the tool'],
+        ['p',        'NarcFilter is a psychoeducational tool. It is not a form of therapy, psychological counseling, or legal advice. AI-generated analyses are informational and do not constitute a diagnosis.'],
+        ['section',  '2. Users'],
+        ['p',        'This tool is intended for adults (18+). By using NarcFilter you accept these Terms of Service.'],
+        ['section',  '3. Limitation of liability'],
+        ['p',        'Integral Mindset Institute sp. z o.o. (trading as Kompas Rozwodowy) is not liable for decisions made based on analyses generated by the application. In crisis situations, please contact a professional — a psychologist, lawyer, or appropriate support services.'],
+        ['p',        'Integral Mindset Institute sp. z o.o. commits to providing the tool with due care but does not guarantee that users will achieve specific outcomes in their communications with other people.'],
+        ['p',        'Integral Mindset Institute sp. z o.o. shall not be liable for lost profits or indirect damages arising from use of the tool.'],
+        ['section',  '4. Intellectual property'],
+        ['p',        'The name NarcFilter, interface, and prompt system are the property of Integral Mindset Institute sp. z o.o. Copying or reproduction without permission is prohibited.'],
+        ['section',  '5. Changes'],
+        ['p',        'We reserve the right to modify these terms. The current version is always available in the application.'],
+        ['section',  '6. Contact'],
+        ['p',        'Integral Mindset Institute sp. z o.o.'],
+        ['p',        'al. Niepodległości 4/78, 05-800 Pruszków, Poland'],
+        ['p',        'NIP: 5342613837 · KRS: 0000820154'],
+        ['p',        'integralmindset@gmail.com'],
+      ],
+    },
+  },
+
+  open(type) {
+    const lines = this.TEXTS[S.lang][type];
+    const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const html = lines.map(([kind, text]) => {
+      if (kind === 'title')    return `<p class="legal-title">${esc(text)}</p>`;
+      if (kind === 'subtitle') return `<p class="legal-subtitle">${esc(text)}</p>`;
+      if (kind === 'section')  return `<p class="legal-section">${esc(text)}</p>`;
+      return `<p class="legal-p">${esc(text)}</p>`;
+    }).join('');
+    document.getElementById('legal-content').innerHTML = html;
+    document.getElementById('legal-modal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  },
+
+  close() {
+    document.getElementById('legal-modal').classList.add('hidden');
+    document.body.style.overflow = '';
   },
 };
 
@@ -1124,6 +1303,9 @@ function setupEvents() {
     if (action === 'delete') Log.delete(id);
     if (action === 'toggle') Log.toggle(id, btn);
   });
+
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') Legal.close(); });
+  UI.$('legal-modal').addEventListener('click', e => { if (e.target === e.currentTarget) Legal.close(); });
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
