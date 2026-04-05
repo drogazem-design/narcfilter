@@ -994,13 +994,16 @@ const Render = {
 
     // Options
     html += `<h3 class="result-section">${this.esc(I18n.t('lbl_options'))}</h3>`;
+    const optLabels = { a: 'Gray Rock', b: 'Facts Only', c: 'Rekomendacja' };
     for (const [key, cls] of [['optionA','a'], ['optionB','b'], ['optionC','c']]) {
       const opt = json[key];
       if (opt) {
+        const text = typeof opt === 'string' ? opt : (opt.text ?? '');
+        const label = typeof opt === 'object' ? (opt.label ?? optLabels[cls]) : optLabels[cls];
         html += `<div class="option-block option-${cls}">`;
-        html += `<p class="option-label">${this.esc(opt.label ?? '')}</p>`;
-        if (opt.text) {
-          html += `<textarea class="option-text-edit" rows="3">${this.esc(opt.text)}</textarea>`;
+        html += `<p class="option-label">${this.esc(label)}</p>`;
+        if (text) {
+          html += `<textarea class="option-text-edit" rows="3">${this.esc(text)}</textarea>`;
           html += `<button class="option-copy-btn" onclick="copyOptionText(this)">${this.esc(I18n.t('btn_copy'))}</button>`;
         }
         html += `</div>`;
