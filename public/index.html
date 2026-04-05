@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>NarcFilter – Kompas Rozwodowy</title>
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230f1923'/><path d='M16 4 L26 8 L26 18 C26 23.5 16 28 16 28 C16 28 6 23.5 6 18 L6 8 Z' fill='%2300c9a7'/><text x='16' y='22' text-anchor='middle' font-family='sans-serif' font-weight='bold' font-size='14' fill='white'>N</text></svg>" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230f1923'/><path d='M16 4 L26 8 L26 18 C26 23.5 16 28 16 28 C16 28 6 23.5 6 18 L6 8 Z' fill='%232D7A6B'/><text x='16' y='22' text-anchor='middle' font-family='sans-serif' font-weight='bold' font-size='14' fill='white'>N</text></svg>" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet" />
@@ -21,10 +21,10 @@
   --border:    rgba(255,255,255,0.07);
   --border-hi: rgba(255,255,255,0.13);
 
-  --teal:      #00c9a7;
-  --teal-lt:   #2ed8b5;
-  --teal-dim:  rgba(0,201,167,0.12);
-  --teal-glow: rgba(0,201,167,0.28);
+  --teal:      #2D7A6B;
+  --teal-lt:   #3a9080;
+  --teal-dim:  rgba(45,122,107,0.12);
+  --teal-glow: rgba(45,122,107,0.28);
 
   --text:      #dff0ec;
   --muted:     #5a8880;
@@ -61,7 +61,7 @@ body {
   line-height: 1.65;
   min-height: 100vh;
   background-image:
-    radial-gradient(ellipse 80% 50% at 8% 0%,   rgba(0,201,167,0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 80% 50% at 8% 0%,   rgba(45,122,107,0.07) 0%, transparent 60%),
     radial-gradient(ellipse 60% 60% at 92% 100%, rgba(0,130,180,0.12) 0%, transparent 55%);
   background-attachment: fixed;
 }
@@ -93,14 +93,14 @@ a { color:var(--teal); }
   animation: shieldGlow 4s ease-in-out infinite;
 }
 @keyframes shieldGlow {
-  0%,100% { filter:drop-shadow(0 0 4px rgba(0,201,167,0.22)); }
-  50%      { filter:drop-shadow(0 0 18px rgba(0,201,167,0.55)); }
+  0%,100% { filter:drop-shadow(0 0 4px rgba(45,122,107,0.22)); }
+  50%      { filter:drop-shadow(0 0 18px rgba(45,122,107,0.55)); }
 }
 .brand-text { display:flex; flex-direction:column; gap:0; }
 .brand-name {
   font-family: 'DM Serif Display', Georgia, serif;
   font-size: 1.2rem; font-weight:400; letter-spacing:0.01em;
-  background: linear-gradient(120deg, #2ed8b5 0%, #00c9a7 55%, #009e84 100%);
+  background: linear-gradient(120deg, #3a9080 0%, #2D7A6B 55%, #215a4e 100%);
   -webkit-background-clip:text; -webkit-text-fill-color:transparent;
   background-clip:text; line-height:1.2;
 }
@@ -111,7 +111,7 @@ a { color:var(--teal); }
 .module-label {
   font-size: 0.6rem; font-weight: 700;
   color: var(--teal); background: var(--teal-dim);
-  border: 1px solid rgba(0,201,167,0.2);
+  border: 1px solid rgba(45,122,107,0.2);
   border-radius: var(--pill); padding: 2px 9px;
   letter-spacing: 0.07em; text-transform: uppercase;
   white-space: nowrap; flex-shrink: 0;
@@ -131,7 +131,7 @@ a { color:var(--teal); }
 }
 .lang-btn.active {
   background:var(--teal); color:#0c1821;
-  box-shadow:0 1px 6px rgba(0,201,167,0.35);
+  box-shadow:0 1px 6px rgba(45,122,107,0.35);
 }
 .lang-btn:hover:not(.active) { color:var(--teal); }
 .btn-settings {
@@ -195,7 +195,7 @@ a { color:var(--teal); }
 .card::before {
   content:'';
   position:absolute; top:0; left:0; right:0; height:1px;
-  background:linear-gradient(90deg, transparent 0%, var(--teal-dim) 30%, rgba(0,201,167,0.38) 50%, var(--teal-dim) 70%, transparent 100%);
+  background:linear-gradient(90deg, transparent 0%, var(--teal-dim) 30%, rgba(45,122,107,0.38) 50%, var(--teal-dim) 70%, transparent 100%);
 }
 
 /* ── FORMS ───────────────────────────────────────────────────────────────────── */
@@ -214,7 +214,7 @@ a { color:var(--teal); }
 }
 .textarea:focus {
   border-color:var(--teal);
-  box-shadow:0 0 0 3px var(--teal-dim), 0 0 18px rgba(0,201,167,0.08);
+  box-shadow:0 0 0 3px var(--teal-dim), 0 0 18px rgba(45,122,107,0.08);
   background: rgba(22,50,70,0.9);
 }
 .textarea-sm { min-height:78px; }
@@ -230,9 +230,9 @@ a { color:var(--teal); }
 .btn:focus-visible { box-shadow:0 0 0 3px var(--teal-glow); }
 
 .btn-primary {
-  background:linear-gradient(135deg, #2ed8b5, #00b594);
+  background:linear-gradient(135deg, #3a9080, #2D7A6B);
   color:#0c1821; font-weight:700;
-  box-shadow:0 2px 12px rgba(0,201,167,0.3);
+  box-shadow:0 2px 12px rgba(45,122,107,0.3);
 }
 .btn-primary::after {
   content:''; position:absolute; inset:0;
@@ -241,7 +241,7 @@ a { color:var(--teal); }
 }
 .btn-primary:hover:not(:disabled)::after { transform:translateX(100%); }
 .btn-primary:hover:not(:disabled) {
-  box-shadow:0 4px 22px rgba(0,201,167,0.45);
+  box-shadow:0 4px 22px rgba(45,122,107,0.45);
   transform:translateY(-1px);
 }
 .btn-secondary {
@@ -251,7 +251,7 @@ a { color:var(--teal); }
 }
 .btn-secondary:hover:not(:disabled) {
   border-color:var(--teal); color:var(--teal);
-  background:rgba(0,201,167,0.06);
+  background:rgba(45,122,107,0.06);
 }
 .btn-outline-danger {
   background:transparent; color:var(--err);
@@ -260,7 +260,7 @@ a { color:var(--teal); }
 .btn-outline-danger:hover:not(:disabled) { background:var(--err-bg); }
 
 .btn-analyzing {
-  background:linear-gradient(90deg,#00a882,#00c9a7,#2ed8b5,#00c9a7,#00a882) !important;
+  background:linear-gradient(90deg,#245f55,#2D7A6B,#3a9080,#2D7A6B,#245f55) !important;
   background-size:200% 100% !important;
   animation:shimmer 1.4s linear infinite !important;
   color:#0c1821 !important;
@@ -317,6 +317,10 @@ a { color:var(--teal); }
   margin-bottom:9px!important; letter-spacing:0.01em;
   display:flex; align-items:center; gap:8px;
 }
+.option-desc {
+  font-size:0.78rem; color:#6b7280;
+  margin:0 0 0.5rem!important; line-height:1.4;
+}
 .option-a { background:var(--opt-a-bg); border-left-color:var(--opt-a-bd); }
 .option-b { background:var(--opt-b-bg); border-left-color:var(--opt-b-bd); }
 .option-c { background:var(--opt-c-bg); border-left-color:var(--opt-c-bd); }
@@ -348,11 +352,11 @@ a { color:var(--teal); }
 /* ── WARM SECTION ────────────────────────────────────────────────────────────── */
 .section-warm {
   color:var(--teal) !important;
-  border-bottom-color:rgba(0,201,167,0.22) !important;
+  border-bottom-color:rgba(45,122,107,0.22) !important;
 }
 .section-warm ~ p {
-  background:rgba(0,201,167,0.05);
-  border:1px solid rgba(0,201,167,0.14);
+  background:rgba(45,122,107,0.05);
+  border:1px solid rgba(45,122,107,0.14);
   border-radius:var(--radius-sm);
   padding:15px 18px; font-style:italic;
   line-height:1.85; color:var(--text);
@@ -429,14 +433,14 @@ a { color:var(--teal); }
 }
 .security-badge {
   display:inline-flex; align-items:center; gap:5px;
-  background:rgba(0,201,167,0.1); border:1px solid rgba(0,201,167,0.2);
+  background:rgba(45,122,107,0.1); border:1px solid rgba(45,122,107,0.2);
   border-radius:var(--pill); padding:4px 12px;
   font-size:0.75rem; font-weight:600; color:var(--teal);
 }
 .settings-info {
   padding:14px 16px;
-  background: rgba(0,201,167,0.05);
-  border:1px solid rgba(0,201,167,0.12);
+  background: rgba(45,122,107,0.05);
+  border:1px solid rgba(45,122,107,0.12);
   border-radius:var(--radius-sm);
   font-size:0.84rem; color:var(--muted); line-height:1.7;
   margin-bottom:24px;
@@ -571,9 +575,9 @@ a { color:var(--teal); }
           <circle cx="13" cy="20.2" r="1.4" fill="rgba(255,255,255,0.68)"/>
           <defs>
             <linearGradient id="sg" x1="3.5" y1="1.5" x2="22.5" y2="28" gradientUnits="userSpaceOnUse">
-              <stop offset="0%"   stop-color="#3de0c0"/>
-              <stop offset="55%"  stop-color="#00c9a7"/>
-              <stop offset="100%" stop-color="#008f76"/>
+              <stop offset="0%"   stop-color="#4aab97"/>
+              <stop offset="55%"  stop-color="#2D7A6B"/>
+              <stop offset="100%" stop-color="#1f5a50"/>
             </linearGradient>
           </defs>
         </svg>
@@ -743,6 +747,9 @@ const TRANSLATIONS = {
     lbl_options:'Twoje opcje odpowiedzi',
     lbl_warmth:'Słowo dla ciebie',
     lbl_no_patterns:'Brak wyraźnych wzorców manipulacji.',
+    opt_desc_a:'Minimalna, emocjonalnie neutralna odpowiedź — nie dajesz drugiej stronie nic, czego mogłaby użyć przeciwko tobie.',
+    opt_desc_b:'Odpowiedź oparta wyłącznie na faktach: daty, liczby, sprawy dotyczące dziecka. Zero emocji, zero ocen.',
+    opt_desc_c:'Rekomendacja AI — czy w tej sytuacji lepiej odpowiedzieć, czy zachować milczenie, i dlaczego.',
   },
   en: {
     tab_analyze:'Analyze', tab_log:'Log', tab_settings:'Settings',
@@ -778,6 +785,9 @@ const TRANSLATIONS = {
     lbl_options:'Your response options',
     lbl_warmth:'A word for you',
     lbl_no_patterns:'No clear manipulation patterns detected.',
+    opt_desc_a:'Minimal, emotionally neutral reply — you give the other side nothing they can use against you.',
+    opt_desc_b:'Reply based solely on facts: dates, numbers, child-related topics. No emotions, no judgements.',
+    opt_desc_c:'AI recommendation — whether it\'s better to respond or stay silent in this situation, and why.',
   }
 };
 
@@ -995,6 +1005,7 @@ const Render = {
     // Options
     html += `<h3 class="result-section">${this.esc(I18n.t('lbl_options'))}</h3>`;
     const optLabels = { a: 'Gray Rock', b: 'Facts Only', c: 'Rekomendacja' };
+    const optDescs  = { a: I18n.t('opt_desc_a'), b: I18n.t('opt_desc_b'), c: I18n.t('opt_desc_c') };
     for (const [key, cls] of [['optionA','a'], ['optionB','b'], ['optionC','c']]) {
       const opt = json[key];
       if (opt) {
@@ -1002,9 +1013,12 @@ const Render = {
         const label = typeof opt === 'object' ? (opt.label ?? optLabels[cls]) : optLabels[cls];
         html += `<div class="option-block option-${cls}">`;
         html += `<p class="option-label">${this.esc(label)}</p>`;
+        html += `<p class="option-desc">${this.esc(optDescs[cls])}</p>`;
         if (text) {
           html += `<textarea class="option-text-edit" rows="3">${this.esc(text)}</textarea>`;
-          html += `<button class="option-copy-btn" onclick="copyOptionText(this)">${this.esc(I18n.t('btn_copy'))}</button>`;
+          if (cls !== 'c') {
+            html += `<button class="option-copy-btn" onclick="copyOptionText(this)">${this.esc(I18n.t('btn_copy'))}</button>`;
+          }
         }
         html += `</div>`;
       }
