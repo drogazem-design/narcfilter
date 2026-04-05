@@ -184,7 +184,7 @@ a { color:var(--teal); }
 /* ── MAIN ────────────────────────────────────────────────────────────────────── */
 .main-content {
   flex:1; max-width:var(--max-w); margin:0 auto; width:100%;
-  padding:20px 16px 88px;
+  padding:20px 16px calc(88px + 56px);
 }
 .panel.hidden { display:none; }
 
@@ -513,6 +513,17 @@ a { color:var(--teal); }
 .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
 .toast.hidden { display:none; }
 
+/* ── DISCLAIMER BAR ──────────────────────────────────────────────────────────── */
+.disclaimer-bar {
+  position:fixed; bottom:0; left:0; right:0; z-index:800;
+  text-align:center; padding:7px 20px;
+  font-size:11px; line-height:1.5;
+  color:rgba(255,255,255,0.62);
+  background:rgba(12,24,33,0.92);
+  backdrop-filter:blur(6px);
+  border-top:1px solid rgba(255,255,255,0.06);
+}
+
 /* ── LOADING OVERLAY ─────────────────────────────────────────────────────────── */
 .loading-overlay {
   position:fixed; inset:0; z-index:300;
@@ -594,7 +605,7 @@ a { color:var(--teal); }
 
 /* ── DESKTOP ─────────────────────────────────────────────────────────────────── */
 @media (min-width:640px) {
-  .main-content { padding:24px 20px 88px; }
+  .main-content { padding:24px 20px calc(88px + 56px); }
   .card { padding:26px; }
 }
 
@@ -755,6 +766,9 @@ a { color:var(--teal); }
     <div class="legal-modal-body" id="legal-content"></div>
   </div>
 </div>
+
+<!-- DISCLAIMER -->
+<div class="disclaimer-bar" id="disclaimer-bar" data-i18n="disclaimer"></div>
 
 <!-- LOADING OVERLAY -->
 <div id="loading-overlay" class="loading-overlay hidden" aria-live="polite" aria-label="Analyzing...">
@@ -933,6 +947,7 @@ const TRANSLATIONS = {
     confirm_clear:'Wyczyścić cały dziennik? Tej operacji nie można cofnąć.',
     confirm_clear_all:'Usunąć wszystkie dane? Klucz API i cały dziennik zostaną usunięte. Tej operacji nie można cofnąć.',
     footer_privacy:'Polityka prywatności', footer_terms:'Regulamin',
+    disclaimer:'Analizy generowane przez AI mogą zawierać błędy i mają charakter wyłącznie informacyjny. Nie zastępują porady prawnej, psychologicznej ani innej profesjonalnej rekomendacji. To Ty podejmujesz ostateczną decyzję co do swoich działań.',
     btn_close:'Zamknij',
   },
   en: {
@@ -972,6 +987,7 @@ const TRANSLATIONS = {
     confirm_clear:'Clear the entire log? This cannot be undone.',
     confirm_clear_all:'Delete all data? API key and entire log will be removed. This cannot be undone.',
     footer_privacy:'Privacy Policy', footer_terms:'Terms',
+    disclaimer:'AI-generated analyses may contain errors and are for informational purposes only. They do not replace legal, psychological, or other professional advice. You make the final decision about your actions.',
     btn_close:'Close',
   }
 };
