@@ -770,6 +770,9 @@ a { color:var(--teal); }
         <button id="btn-export" class="btn btn-secondary" data-i18n="btn_export" disabled></button>
         <button id="btn-clear"  class="btn btn-outline-danger" data-i18n="btn_clear" disabled></button>
       </div>
+      <div class="log-actions" style="margin-top:-4px">
+        <button id="btn-export-logbook" class="btn btn-secondary btn-full" disabled>Eksportuj do coParentLogBook</button>
+      </div>
       <div id="log-empty" class="empty-state">
         <div class="empty-icon">⊟</div>
         <p class="empty-title" data-i18n="empty_title"></p>
@@ -1323,14 +1326,14 @@ const Render = {
 
   log() {
     const container = UI.$('log-entries'), empty = UI.$('log-empty');
-    const expBtn = UI.$('btn-export'), clrBtn = UI.$('btn-clear');
+    const expBtn = UI.$('btn-export'), clrBtn = UI.$('btn-clear'), lbBtn = UI.$('btn-export-logbook');
 
     if (!S.log.length) {
       empty.classList.remove('hidden'); container.innerHTML = '';
-      expBtn.disabled = true; clrBtn.disabled = true; return;
+      expBtn.disabled = true; clrBtn.disabled = true; lbBtn.disabled = true; return;
     }
 
-    empty.classList.add('hidden'); expBtn.disabled = false; clrBtn.disabled = false;
+    empty.classList.add('hidden'); expBtn.disabled = false; clrBtn.disabled = false; lbBtn.disabled = false;
 
     container.innerHTML = S.log.map(e => {
       const preview = e.message.length > 130
@@ -1469,6 +1472,21 @@ const Log = {
     Store.setJ(SK.log, S.log);
     Render.log();
     UI.toast(I18n.t('toast_deleted'));
+  },
+
+  exportLogBook() {
+    if (!S.log.length) { alert('Brak wpisów do eksportu'); return; }
+    const payload = {
+      exportDate: new Date().toISOString(),
+      source: 'NarcFilter',
+      entries: S.log,
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'narcfilter-export.json';
+    a.click();
+    URL.revokeObjectURL(url);
   },
 
   clear() {
@@ -1641,6 +1659,7 @@ function setupEvents() {
   UI.$('btn-save-log').addEventListener('click', () => Log.save());
   UI.$('btn-export').addEventListener('click', () => Log.export());
   UI.$('btn-clear').addEventListener('click', () => Log.clear());
+  UI.$('btn-export-logbook').addEventListener('click', () => Log.exportLogBook());
 
   // Log entry actions (delegated)
   UI.$('log-entries').addEventListener('click', e => {
