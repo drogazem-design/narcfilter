@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>NarcFilter – Kompas Rozwodowy</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230f1923'/><path d='M16 4 L26 8 L26 18 C26 23.5 16 28 16 28 C16 28 6 23.5 6 18 L6 8 Z' fill='%232D7A6B'/><text x='16' y='22' text-anchor='middle' font-family='sans-serif' font-weight='bold' font-size='14' fill='white'>N</text></svg>" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet" />
@@ -22,10 +23,10 @@
   --border-hi: rgba(255,255,255,0.13);
 
   /* Accent — teal */
-  --teal:      #00c9a7;
-  --teal-lt:   #2ed8b5;
-  --teal-dim:  rgba(0,201,167,0.12);
-  --teal-glow: rgba(0,201,167,0.28);
+  --teal:      #2D7A6B;
+  --teal-lt:   #3a9080;
+  --teal-dim:  rgba(45,122,107,0.12);
+  --teal-glow: rgba(45,122,107,0.28);
 
   /* Text */
   --text:      #dff0ec;
@@ -46,9 +47,9 @@
   --err:      #e05c5c;
   --err-bg:   rgba(224,92,92,0.1);
   --err-bd:   rgba(224,92,92,0.25);
-  --warn-bg:  rgba(0,201,167,0.07);
-  --warn-bd:  rgba(0,201,167,0.18);
-  --warn-txt: #00c9a7;
+  --warn-bg:  rgba(45,122,107,0.07);
+  --warn-bd:  rgba(45,122,107,0.18);
+  --warn-txt: #2D7A6B;
 
   /* Geometry */
   --radius:    16px;
@@ -71,7 +72,7 @@ body {
   line-height: 1.65;
   min-height: 100vh;
   background-image:
-    radial-gradient(ellipse 80% 50% at 8% 0%,   rgba(0,201,167,0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 80% 50% at 8% 0%,   rgba(45,122,107,0.07) 0%, transparent 60%),
     radial-gradient(ellipse 60% 60% at 92% 100%, rgba(0,130,180,0.12) 0%, transparent 55%);
   background-attachment: fixed;
 }
@@ -104,14 +105,14 @@ a { color:var(--teal); }
   animation: shieldGlow 4s ease-in-out infinite;
 }
 @keyframes shieldGlow {
-  0%,100% { filter:drop-shadow(0 0 4px rgba(0,201,167,0.22)); }
-  50%      { filter:drop-shadow(0 0 18px rgba(0,201,167,0.55)); }
+  0%,100% { filter:drop-shadow(0 0 4px rgba(45,122,107,0.22)); }
+  50%      { filter:drop-shadow(0 0 18px rgba(45,122,107,0.55)); }
 }
 .brand-text { display:flex; flex-direction:column; gap:0; }
 .brand-name {
   font-family: 'DM Serif Display', Georgia, serif;
   font-size: 1.2rem; font-weight:400; letter-spacing:0.01em;
-  background: linear-gradient(120deg, #2ed8b5 0%, #00c9a7 55%, #009e84 100%);
+  background: linear-gradient(120deg, #3a9080 0%, #2D7A6B 55%, #215a4e 100%);
   -webkit-background-clip:text; -webkit-text-fill-color:transparent;
   background-clip:text; line-height:1.2;
 }
@@ -122,7 +123,7 @@ a { color:var(--teal); }
 .module-label {
   font-size: 0.6rem; font-weight: 700;
   color: var(--teal); background: var(--teal-dim);
-  border: 1px solid rgba(0,201,167,0.2);
+  border: 1px solid rgba(45,122,107,0.2);
   border-radius: var(--pill); padding: 2px 9px;
   letter-spacing: 0.07em; text-transform: uppercase;
   white-space: nowrap; flex-shrink: 0;
@@ -143,7 +144,7 @@ a { color:var(--teal); }
 }
 .lang-btn.active {
   background:var(--teal); color:#0c1821;
-  box-shadow:0 1px 6px rgba(0,201,167,0.35);
+  box-shadow:0 1px 6px rgba(45,122,107,0.35);
 }
 .lang-btn:hover:not(.active) { color:var(--teal); }
 .btn-settings {
@@ -183,7 +184,7 @@ a { color:var(--teal); }
 /* ── MAIN ────────────────────────────────────────────────────────────────────── */
 .main-content {
   flex:1; max-width:var(--max-w); margin:0 auto; width:100%;
-  padding:20px 16px 88px;
+  padding:20px 16px calc(88px + 56px);
 }
 .panel.hidden { display:none; }
 
@@ -209,7 +210,7 @@ a { color:var(--teal); }
 .card::before {
   content:'';
   position:absolute; top:0; left:0; right:0; height:1px;
-  background:linear-gradient(90deg, transparent 0%, var(--teal-dim) 30%, rgba(0,201,167,0.38) 50%, var(--teal-dim) 70%, transparent 100%);
+  background:linear-gradient(90deg, transparent 0%, var(--teal-dim) 30%, rgba(45,122,107,0.38) 50%, var(--teal-dim) 70%, transparent 100%);
 }
 
 /* ── FORMS ───────────────────────────────────────────────────────────────────── */
@@ -228,7 +229,7 @@ a { color:var(--teal); }
 }
 .input:focus {
   border-color:var(--teal);
-  box-shadow:0 0 0 3px var(--teal-dim), 0 0 14px rgba(0,201,167,0.1);
+  box-shadow:0 0 0 3px var(--teal-dim), 0 0 14px rgba(45,122,107,0.1);
   background: rgba(22,50,70,0.9);
 }
 .textarea {
@@ -241,7 +242,7 @@ a { color:var(--teal); }
 }
 .textarea:focus {
   border-color:var(--teal);
-  box-shadow:0 0 0 3px var(--teal-dim), 0 0 18px rgba(0,201,167,0.08);
+  box-shadow:0 0 0 3px var(--teal-dim), 0 0 18px rgba(45,122,107,0.08);
   background: rgba(22,50,70,0.9);
 }
 .textarea-sm { min-height:78px; }
@@ -260,9 +261,9 @@ a { color:var(--teal); }
 
 /* Primary — teal */
 .btn-primary {
-  background:linear-gradient(135deg, #2ed8b5, #00b594);
+  background:linear-gradient(135deg, #3a9080, #2D7A6B);
   color:#0c1821; font-weight:700;
-  box-shadow:0 2px 12px rgba(0,201,167,0.3);
+  box-shadow:0 2px 12px rgba(45,122,107,0.3);
 }
 .btn-primary::after {
   content:''; position:absolute; inset:0;
@@ -271,7 +272,7 @@ a { color:var(--teal); }
 }
 .btn-primary:hover:not(:disabled)::after { transform:translateX(100%); }
 .btn-primary:hover:not(:disabled) {
-  box-shadow:0 4px 22px rgba(0,201,167,0.45);
+  box-shadow:0 4px 22px rgba(45,122,107,0.45);
   transform:translateY(-1px);
 }
 
@@ -285,7 +286,7 @@ a { color:var(--teal); }
 }
 .btn-secondary:hover:not(:disabled) {
   border-color:var(--teal); color:var(--teal);
-  background:rgba(0,201,167,0.06);
+  background:rgba(45,122,107,0.06);
 }
 
 /* Danger outline */
@@ -307,7 +308,7 @@ a { color:var(--teal); }
 
 /* Analyzing shimmer state */
 .btn-analyzing {
-  background:linear-gradient(90deg,#00a882,#00c9a7,#2ed8b5,#00c9a7,#00a882) !important;
+  background:linear-gradient(90deg,#245f55,#2D7A6B,#3a9080,#2D7A6B,#245f55) !important;
   background-size:200% 100% !important;
   animation:shimmer 1.4s linear infinite !important;
   color:#0c1821 !important;
@@ -383,11 +384,11 @@ a { color:var(--teal); }
 /* ── WARM SUPPORT SECTION ────────────────────────────────────────────────────── */
 .section-warm {
   color:var(--teal) !important;
-  border-bottom-color:rgba(0,201,167,0.22) !important;
+  border-bottom-color:rgba(45,122,107,0.22) !important;
 }
 .section-warm ~ p {
-  background:rgba(0,201,167,0.05);
-  border:1px solid rgba(0,201,167,0.14);
+  background:rgba(45,122,107,0.05);
+  border:1px solid rgba(45,122,107,0.14);
   border-radius:var(--radius-sm);
   padding:15px 18px; font-style:italic;
   line-height:1.85; color:var(--text);
@@ -477,7 +478,7 @@ a { color:var(--teal); }
 }
 .security-badge {
   display:inline-flex; align-items:center; gap:5px;
-  background:rgba(0,201,167,0.1); border:1px solid rgba(0,201,167,0.2);
+  background:rgba(45,122,107,0.1); border:1px solid rgba(45,122,107,0.2);
   border-radius:var(--pill); padding:4px 12px;
   font-size:0.75rem; font-weight:600; color:var(--teal);
 }
@@ -512,6 +513,17 @@ a { color:var(--teal); }
 .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
 .toast.hidden { display:none; }
 
+/* ── DISCLAIMER BAR ──────────────────────────────────────────────────────────── */
+.disclaimer-bar {
+  position:fixed; bottom:0; left:0; right:0; z-index:800;
+  text-align:center; padding:7px 20px;
+  font-size:11px; line-height:1.5;
+  color:rgba(255,255,255,0.62);
+  background:rgba(12,24,33,0.92);
+  backdrop-filter:blur(6px);
+  border-top:1px solid rgba(255,255,255,0.06);
+}
+
 /* ── LOADING OVERLAY ─────────────────────────────────────────────────────────── */
 .loading-overlay {
   position:fixed; inset:0; z-index:300;
@@ -542,9 +554,58 @@ a { color:var(--teal); }
 /* ── UTILS ───────────────────────────────────────────────────────────────────── */
 .hidden { display:none !important; }
 
+/* ── FOOTER ─────────────────────────────────────────────────────────────────── */
+.app-footer {
+  text-align:center; padding:16px 16px 32px;
+  color:var(--muted); font-size:0.78rem;
+}
+.footer-link {
+  color:var(--muted); text-decoration:none; opacity:0.65;
+  transition:opacity 0.15s;
+}
+.footer-link:hover { opacity:1; text-decoration:underline; }
+.footer-sep { margin:0 8px; opacity:0.35; }
+
+/* ── LEGAL MODAL ─────────────────────────────────────────────────────────────── */
+.legal-modal {
+  position:fixed; inset:0; z-index:900;
+  background:rgba(0,0,0,0.72); backdrop-filter:blur(4px);
+  display:flex; align-items:center; justify-content:center;
+  padding:20px;
+}
+.legal-modal-box {
+  background:var(--surface2); border:1px solid var(--border-hi);
+  border-radius:var(--radius); max-width:600px; width:100%;
+  max-height:82vh; display:flex; flex-direction:column;
+  box-shadow:var(--shadow);
+}
+.legal-modal-header {
+  display:flex; justify-content:flex-end;
+  padding:12px 16px 0; flex-shrink:0;
+}
+.legal-modal-close {
+  background:transparent; border:1px solid var(--border-hi);
+  border-radius:var(--radius-xs); color:var(--muted); cursor:pointer;
+  padding:4px 12px; font-size:0.8rem; transition:background 0.15s;
+}
+.legal-modal-close:hover { background:rgba(255,255,255,0.06); }
+.legal-modal-body {
+  overflow-y:auto; padding:4px 28px 28px; flex:1;
+}
+.legal-title {
+  font-family:'DM Serif Display',Georgia,serif;
+  font-size:1.15rem; color:var(--teal); margin-bottom:2px;
+}
+.legal-subtitle { font-size:0.8rem; color:var(--muted); margin-bottom:16px; }
+.legal-section {
+  font-weight:600; font-size:0.88rem; color:var(--text);
+  margin:16px 0 4px;
+}
+.legal-p { font-size:0.86rem; line-height:1.7; color:var(--text); margin-bottom:6px; }
+
 /* ── DESKTOP ─────────────────────────────────────────────────────────────────── */
 @media (min-width:640px) {
-  .main-content { padding:24px 20px 88px; }
+  .main-content { padding:24px 20px calc(88px + 56px); }
   .card { padding:26px; }
 }
 
@@ -575,9 +636,9 @@ a { color:var(--teal); }
           <circle cx="13" cy="20.2" r="1.4" fill="rgba(255,255,255,0.68)"/>
           <defs>
             <linearGradient id="sg" x1="3.5" y1="1.5" x2="22.5" y2="28" gradientUnits="userSpaceOnUse">
-              <stop offset="0%"   stop-color="#3de0c0"/>
-              <stop offset="55%"  stop-color="#00c9a7"/>
-              <stop offset="100%" stop-color="#008f76"/>
+              <stop offset="0%"   stop-color="#4aab97"/>
+              <stop offset="55%"  stop-color="#2D7A6B"/>
+              <stop offset="100%" stop-color="#1f5a50"/>
             </linearGradient>
           </defs>
         </svg>
@@ -586,7 +647,7 @@ a { color:var(--teal); }
             <span class="brand-name">NarcFilter</span>
             <span class="module-label">Moduł analizy komunikacji</span>
           </div>
-          <span class="brand-tagline">część Kompas Rozwodowy</span>
+          <span class="brand-tagline">owned by kompasrozwodowy.vercel.app</span>
         </div>
       </a>
       <div class="header-controls">
@@ -688,7 +749,26 @@ a { color:var(--teal); }
     </div>
 
   </main>
+
+  <footer class="app-footer">
+    <a href="#" class="footer-link" onclick="Legal.open('privacy');return false;" data-i18n="footer_privacy"></a>
+    <span class="footer-sep">·</span>
+    <a href="#" class="footer-link" onclick="Legal.open('terms');return false;" data-i18n="footer_terms"></a>
+  </footer>
 </div>
+
+<!-- LEGAL MODAL -->
+<div id="legal-modal" class="legal-modal hidden" role="dialog" aria-modal="true">
+  <div class="legal-modal-box">
+    <div class="legal-modal-header">
+      <button class="legal-modal-close" onclick="Legal.close()" data-i18n="btn_close"></button>
+    </div>
+    <div class="legal-modal-body" id="legal-content"></div>
+  </div>
+</div>
+
+<!-- DISCLAIMER -->
+<div class="disclaimer-bar" id="disclaimer-bar" data-i18n="disclaimer"></div>
 
 <!-- LOADING OVERLAY -->
 <div id="loading-overlay" class="loading-overlay hidden" aria-live="polite" aria-label="Analyzing...">
@@ -866,6 +946,9 @@ const TRANSLATIONS = {
     err_api:'Błąd serwera API. Spróbuj ponownie.',
     confirm_clear:'Wyczyścić cały dziennik? Tej operacji nie można cofnąć.',
     confirm_clear_all:'Usunąć wszystkie dane? Klucz API i cały dziennik zostaną usunięte. Tej operacji nie można cofnąć.',
+    footer_privacy:'Polityka prywatności', footer_terms:'Regulamin',
+    disclaimer:'Analizy generowane przez AI mogą zawierać błędy i mają charakter wyłącznie informacyjny. Nie zastępują porady prawnej, psychologicznej ani innej profesjonalnej rekomendacji. To Ty podejmujesz ostateczną decyzję co do swoich działań.',
+    btn_close:'Zamknij',
   },
   en: {
     tab_analyze:'Analyze', tab_log:'Log', tab_settings:'Settings',
@@ -903,6 +986,9 @@ const TRANSLATIONS = {
     err_api:'API server error. Please try again.',
     confirm_clear:'Clear the entire log? This cannot be undone.',
     confirm_clear_all:'Delete all data? API key and entire log will be removed. This cannot be undone.',
+    footer_privacy:'Privacy Policy', footer_terms:'Terms',
+    disclaimer:'AI-generated analyses may contain errors and are for informational purposes only. They do not replace legal, psychological, or other professional advice. You make the final decision about your actions.',
+    btn_close:'Close',
   }
 };
 
@@ -958,6 +1044,115 @@ const I18n = {
     document.getElementById('btn-pl').classList.toggle('active', S.lang === 'pl');
     document.getElementById('btn-en').classList.toggle('active', S.lang === 'en');
     document.documentElement.lang = S.lang;
+  },
+};
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// MODULE: Legal — Privacy Policy & Terms of Service
+// ═══════════════════════════════════════════════════════════════════════════════
+const Legal = {
+  TEXTS: {
+    pl: {
+      privacy: [
+        ['title',    'Polityka Prywatności'],
+        ['subtitle', 'NarcFilter — Moduł Kompas Rozwodowy · Ostatnia aktualizacja: kwiecień 2026'],
+        ['section',  '1. Administrator danych'],
+        ['p',        'Administratorem danych osobowych jest Integral Mindset Institute spółka z ograniczoną odpowiedzialnością (działająca pod marką Kompas Rozwodowy), z siedzibą w Pruszkowie, al. Niepodległości 4/78, 05-800 Pruszków, wpisana do rejestru przedsiębiorców KRS pod numerem 0000820154, NIP: 5342613837. Kontakt: integralmindset@gmail.com'],
+        ['section',  '2. Jakie dane przetwarzamy'],
+        ['p',        'Gdy wklejasz wiadomość do analizy, jej treść jest wysyłana do API firmy Anthropic (USA) wyłącznie w celu przeprowadzenia analizy. Nie przechowujemy tej treści na własnych serwerach.'],
+        ['p',        'Log incydentów jest przechowywany wyłącznie lokalnie w Twojej przeglądarce (localStorage). Nie mamy do niego dostępu.'],
+        ['p',        'Nie zbieramy adresów email, imion, danych logowania ani żadnych innych danych osobowych.'],
+        ['section',  '3. Anthropic API'],
+        ['p',        'Treść wiadomości trafia do Anthropic Inc. zgodnie z ich polityką prywatności: anthropic.com/privacy. Anthropic może przechowywać zapytania przez ograniczony czas zgodnie ze swoją polityką.'],
+        ['section',  '4. Pliki cookie'],
+        ['p',        'Aplikacja nie używa plików cookie. Dane są przechowywane wyłącznie w localStorage Twojej przeglądarki.'],
+        ['section',  '5. Twoje prawa (RODO)'],
+        ['p',        'Masz prawo do dostępu, sprostowania i usunięcia danych. Ponieważ nie przechowujemy Twoich danych, możesz je usunąć samodzielnie przez funkcję "Usuń wszystkie dane lokalne" w Ustawieniach aplikacji. W sprawach dotyczących danych osobowych możesz kontaktować się pod adresem: integralmindset@gmail.com'],
+        ['section',  '6. Zmiany polityki'],
+        ['p',        'O istotnych zmianach poinformujemy na stronie kompasrozwodowy.vercel.app.'],
+      ],
+      terms: [
+        ['title',    'Regulamin'],
+        ['subtitle', 'NarcFilter — Moduł Kompas Rozwodowy · Ostatnia aktualizacja: kwiecień 2026'],
+        ['section',  '1. Charakter narzędzia'],
+        ['p',        'NarcFilter jest narzędziem psychoedukacyjnym. Nie jest formą terapii, poradnictwa psychologicznego ani pomocy prawnej. Analizy generowane przez AI mają charakter informacyjny i nie stanowią diagnozy.'],
+        ['section',  '2. Użytkownik'],
+        ['p',        'Z narzędzia mogą korzystać osoby pełnoletnie (18+). Korzystając z NarcFilter akceptujesz niniejszy regulamin.'],
+        ['section',  '3. Ograniczenie odpowiedzialności'],
+        ['p',        'Integral Mindset Institute sp. z o.o. (działająca pod marką Kompas Rozwodowy) nie ponosi odpowiedzialności za decyzje podjęte na podstawie analiz wygenerowanych przez aplikację. W sytuacjach kryzysowych skontaktuj się ze specjalistą — psychologiem, prawnikiem lub służbami pomocowymi.'],
+        ['p',        'Integral Mindset Institute sp. z o.o. zobowiązuje się do starannego działania w zakresie dostarczania narzędzia, nie gwarantuje jednak osiągnięcia przez użytkownika określonych rezultatów w komunikacji z innymi osobami.'],
+        ['p',        'Integral Mindset Institute sp. z o.o. nie ponosi odpowiedzialności za utracone korzyści ani szkody pośrednie wynikające z korzystania z narzędzia.'],
+        ['section',  '4. Własność intelektualna'],
+        ['p',        'Nazwa NarcFilter, interfejs i system promptów są własnością Integral Mindset Institute sp. z o.o. Kopiowanie i reprodukowanie bez zgody jest zabronione.'],
+        ['section',  '5. Zmiany regulaminu'],
+        ['p',        'Zastrzegamy prawo do zmiany regulaminu. Aktualna wersja zawsze dostępna jest na stronie aplikacji.'],
+        ['section',  '6. Kontakt'],
+        ['p',        'Integral Mindset Institute sp. z o.o.'],
+        ['p',        'al. Niepodległości 4/78, 05-800 Pruszków'],
+        ['p',        'NIP: 5342613837 · KRS: 0000820154'],
+        ['p',        'integralmindset@gmail.com'],
+      ],
+    },
+    en: {
+      privacy: [
+        ['title',    'Privacy Policy'],
+        ['subtitle', 'NarcFilter — Kompas Rozwodowy Module · Last updated: April 2026'],
+        ['section',  '1. Data Controller'],
+        ['p',        'The data controller is Integral Mindset Institute spółka z ograniczoną odpowiedzialnością (trading as Kompas Rozwodowy), seated in Pruszków, al. Niepodległości 4/78, 05-800 Pruszków, Poland, registered in the National Court Register under KRS number 0000820154, NIP: 5342613837. Contact: integralmindset@gmail.com'],
+        ['section',  '2. What data we process'],
+        ['p',        'When you paste a message for analysis, its content is sent to Anthropic\'s API (USA) solely to perform the analysis. We do not store this content on our own servers.'],
+        ['p',        'Your incident log is stored locally in your browser (localStorage) only. We have no access to it.'],
+        ['p',        'We do not collect email addresses, names, login credentials, or any other personal data.'],
+        ['section',  '3. Anthropic API'],
+        ['p',        'Message content is processed by Anthropic Inc. under their privacy policy: anthropic.com/privacy. Anthropic may retain queries for a limited period per their policy.'],
+        ['section',  '4. Cookies'],
+        ['p',        'This application does not use cookies. Data is stored solely in your browser\'s localStorage.'],
+        ['section',  '5. Your rights (GDPR)'],
+        ['p',        'You have the right to access, correct, and delete your data. Since we do not store your data, you can delete it yourself using "Delete all local data" in the app Settings. For data-related inquiries contact: integralmindset@gmail.com'],
+        ['section',  '6. Policy changes'],
+        ['p',        'Material changes will be announced at kompasrozwodowy.vercel.app.'],
+      ],
+      terms: [
+        ['title',    'Terms of Service'],
+        ['subtitle', 'NarcFilter — Kompas Rozwodowy Module · Last updated: April 2026'],
+        ['section',  '1. Nature of the tool'],
+        ['p',        'NarcFilter is a psychoeducational tool. It is not a form of therapy, psychological counseling, or legal advice. AI-generated analyses are informational and do not constitute a diagnosis.'],
+        ['section',  '2. Users'],
+        ['p',        'This tool is intended for adults (18+). By using NarcFilter you accept these Terms of Service.'],
+        ['section',  '3. Limitation of liability'],
+        ['p',        'Integral Mindset Institute sp. z o.o. (trading as Kompas Rozwodowy) is not liable for decisions made based on analyses generated by the application. In crisis situations, please contact a professional — a psychologist, lawyer, or appropriate support services.'],
+        ['p',        'Integral Mindset Institute sp. z o.o. commits to providing the tool with due care but does not guarantee that users will achieve specific outcomes in their communications with other people.'],
+        ['p',        'Integral Mindset Institute sp. z o.o. shall not be liable for lost profits or indirect damages arising from use of the tool.'],
+        ['section',  '4. Intellectual property'],
+        ['p',        'The name NarcFilter, interface, and prompt system are the property of Integral Mindset Institute sp. z o.o. Copying or reproduction without permission is prohibited.'],
+        ['section',  '5. Changes'],
+        ['p',        'We reserve the right to modify these terms. The current version is always available in the application.'],
+        ['section',  '6. Contact'],
+        ['p',        'Integral Mindset Institute sp. z o.o.'],
+        ['p',        'al. Niepodległości 4/78, 05-800 Pruszków, Poland'],
+        ['p',        'NIP: 5342613837 · KRS: 0000820154'],
+        ['p',        'integralmindset@gmail.com'],
+      ],
+    },
+  },
+
+  open(type) {
+    const lines = this.TEXTS[S.lang][type];
+    const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const html = lines.map(([kind, text]) => {
+      if (kind === 'title')    return `<p class="legal-title">${esc(text)}</p>`;
+      if (kind === 'subtitle') return `<p class="legal-subtitle">${esc(text)}</p>`;
+      if (kind === 'section')  return `<p class="legal-section">${esc(text)}</p>`;
+      return `<p class="legal-p">${esc(text)}</p>`;
+    }).join('');
+    document.getElementById('legal-content').innerHTML = html;
+    document.getElementById('legal-modal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  },
+
+  close() {
+    document.getElementById('legal-modal').classList.add('hidden');
+    document.body.style.overflow = '';
   },
 };
 
@@ -1390,6 +1585,10 @@ function setupEvents() {
     if (action === 'delete') Log.delete(id);
     if (action === 'toggle') Log.toggle(id, btn);
   });
+
+  // Legal modal — close on Escape or backdrop click
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') Legal.close(); });
+  UI.$('legal-modal').addEventListener('click', e => { if (e.target === e.currentTarget) Legal.close(); });
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
