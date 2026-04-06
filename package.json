@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@upstash/redis": "^1.37.0",
-    "resend": "^6.10.0"
+    "resend": "^6.10.0",
+    "stripe": "^22.0.0"
   }
 }

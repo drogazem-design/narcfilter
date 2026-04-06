@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aktywacja klucza — NarcFilter</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230f1923'/><path d='M16 4 L26 8 L26 18 C26 23.5 16 28 16 28 C16 28 6 23.5 6 18 L6 8 Z' fill='%232D7A6B'/><text x='16' y='22' text-anchor='middle' font-family='sans-serif' font-weight='bold' font-size='14' fill='white'>N</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #0c1821;
+      color: #dff0ec;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background-image:
+        radial-gradient(ellipse 80% 50% at 8% 0%,   rgba(45,122,107,0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 60% at 92% 100%, rgba(0,130,180,0.10) 0%, transparent 55%);
+    }
+    .box {
+      width: 100%; max-width: 400px;
+      background: rgba(16,36,52,0.85);
+      border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 16px;
+      padding: 40px 32px 32px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+      text-align: center;
+    }
+    .logo {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.5rem;
+      background: linear-gradient(120deg, #3a9080 0%, #2D7A6B 55%, #215a4e 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 6px;
+    }
+    .subtitle {
+      font-size: 0.82rem;
+      color: #5a8880;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 32px;
+    }
+    h1 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #dff0ec;
+      margin-bottom: 8px;
+    }
+    p.desc {
+      font-size: 0.88rem;
+      color: #5a8880;
+      line-height: 1.6;
+      margin-bottom: 28px;
+    }
+    input {
+      width: 100%;
+      background: rgba(22,44,64,0.9);
+      border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-family: inherit;
+      font-size: 1rem;
+      color: #dff0ec;
+      outline: none;
+      margin-bottom: 12px;
+      transition: border-color 0.2s;
+    }
+    input:focus { border-color: #2D7A6B; }
+    input::placeholder { color: #294540; }
+    button {
+      width: 100%;
+      background: #2D7A6B;
+      color: #0c1821;
+      border: none;
+      border-radius: 10px;
+      padding: 13px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    button:hover:not(:disabled) { background: #3a9080; }
+    button:disabled { opacity: 0.6; cursor: default; }
+    .msg {
+      margin-top: 18px;
+      padding: 13px 16px;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      line-height: 1.5;
+      display: none;
+    }
+    .msg.success {
+      background: rgba(45,122,107,0.12);
+      border: 1px solid rgba(45,122,107,0.28);
+      color: #3a9080;
+      display: block;
+    }
+    .msg.error {
+      background: rgba(224,92,92,0.1);
+      border: 1px solid rgba(224,92,92,0.25);
+      color: #e05c5c;
+      display: block;
+    }
+    .back {
+      display: block;
+      margin-top: 24px;
+      font-size: 0.82rem;
+      color: #5a8880;
+      text-decoration: none;
+    }
+    .back:hover { color: #2D7A6B; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <div class="logo">NarcFilter</div>
+    <div class="subtitle">Kompas Rozwodowy</div>
+
+    <h1>Aktywuj dostęp</h1>
+    <p class="desc">Podaj adres email użyty przy zakupie — wyślemy Ci klucz dostępu ponownie.</p>
+
+    <input type="email" id="email-input" placeholder="twoj@email.pl" autocomplete="email" />
+    <button id="btn-send" type="button">Wyślij klucz na email</button>
+
+    <div class="msg" id="msg"></div>
+
+    <a class="back" href="/">← Wróć do aplikacji</a>
+  </div>
+
+  <script>
+    const btn   = document.getElementById('btn-send');
+    const input = document.getElementById('email-input');
+    const msg   = document.getElementById('msg');
+
+    function showMsg(text, type) {
+      msg.textContent = text;
+      msg.className   = `msg ${type}`;
+    }
+
+    async function submit() {
+      const email = input.value.trim();
+      if (!email) { showMsg('Podaj adres email.', 'error'); return; }
+
+      btn.disabled    = true;
+      btn.textContent = 'Wysyłam…';
+      msg.className   = 'msg';
+
+      try {
+        const res  = await fetch('/api/aktywacja-check', {
+          method:  'POST',
+          headers: { 'content-type': 'application/json' },
+          body:    JSON.stringify({ email }),
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          showMsg('Klucz został wysłany! Sprawdź skrzynkę (i folder spam).', 'success');
+          input.value = '';
+        } else {
+          showMsg(data.error ?? 'Wystąpił błąd. Spróbuj ponownie.', 'error');
+        }
+      } catch {
+        showMsg('Brak połączenia z internetem. Spróbuj ponownie.', 'error');
+      } finally {
+        btn.disabled    = false;
+        btn.textContent = 'Wyślij klucz na email';
+      }
+    }
+
+    btn.addEventListener('click', submit);
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') submit(); });
+  </script>
+</body>
+</html>

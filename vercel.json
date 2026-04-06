@@ -2,7 +2,7 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+    { "source": "/aktywacja", "destination": "/aktywacja/index.html" },
+    { "source": "/(.*)",      "destination": "/index.html" }
   ]
 }
-

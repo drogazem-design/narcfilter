@@ -68,6 +68,8 @@ export async function createAndDeliverKey({ packageType, customerEmail }) {
     token: process.env.KV_REST_API_TOKEN,
   });
   await redis.set(key, record);
+  // Reverse index: allows looking up key by email (used by /api/aktywacja-check)
+  await redis.set(`email:${customerEmail.toLowerCase()}`, key);
 
   const resend = new Resend(process.env.RESEND_API_KEY);
   await resend.emails.send({
