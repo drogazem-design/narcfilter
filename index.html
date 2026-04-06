@@ -216,6 +216,21 @@ a { color:var(--teal); }
   background:var(--surface2); color:var(--teal);
   border-color:var(--border);
 }
+.access-key-overlay {
+  position:fixed; inset:0; z-index:600;
+  background:var(--bg); backdrop-filter:blur(4px);
+  display:flex; align-items:center; justify-content:center; padding:20px;
+}
+.access-key-overlay.hidden { display:none !important; }
+.access-key-box {
+  width:100%; max-width:360px;
+  background:var(--surface);
+  border:1px solid var(--border-hi);
+  border-radius:var(--radius);
+  padding:36px 28px 28px;
+  box-shadow:var(--shadow);
+  text-align:center;
+}
 
 /* ── TAB NAV ─────────────────────────────────────────────────────────────────── */
 .tab-nav {
@@ -791,8 +806,9 @@ a { color:var(--teal); }
         <div class="form-group">
           <label class="form-label" for="api-key-input" data-i18n="key_label"></label>
           <div class="input-group">
-            <input type="password" id="api-key-input" class="input" placeholder="sk-ant-..."
-                   autocomplete="off" autocorrect="off" spellcheck="false" />
+            <input type="text" id="api-key-input" class="input" placeholder="NF-XXXXX-XXXXX"
+                   autocomplete="off" autocorrect="off" spellcheck="false"
+                   style="letter-spacing:0.05em;text-transform:uppercase" />
             <button class="btn btn-icon-sm" id="btn-toggle-key" data-i18n="key_show"></button>
           </div>
           <p class="form-hint" data-i18n="key_hint"></p>
@@ -825,6 +841,22 @@ a { color:var(--teal); }
   </div>
 </div>
 
+<!-- ACCESS KEY OVERLAY — shown on first launch when no key stored -->
+<div id="access-key-overlay" class="access-key-overlay hidden">
+  <div class="access-key-box">
+    <div class="brand-name" style="font-size:1.35rem;margin-bottom:6px">NarcFilter</div>
+    <p style="color:var(--muted);font-size:0.88rem;margin-bottom:28px;line-height:1.5">Wprowadź klucz dostępu,<br>aby korzystać z aplikacji.</p>
+    <input type="text" id="overlay-key-input" class="input" placeholder="NF-XXXXX-XXXXX"
+           autocomplete="off" spellcheck="false"
+           style="letter-spacing:0.07em;text-transform:uppercase;text-align:center;margin-bottom:12px" />
+    <button id="btn-overlay-save" class="btn btn-primary btn-full">Zapisz klucz</button>
+    <p style="font-size:0.75rem;color:var(--muted);margin-top:18px;text-align:center;line-height:1.6">
+      Klucz dostępu otrzymasz emailem po zakupie pakietu.<br>
+      Możesz go też zmienić w zakładce Ustawienia.
+    </p>
+  </div>
+</div>
+
 <!-- DISCLAIMER -->
 <div class="disclaimer-bar" id="disclaimer-bar" data-i18n="disclaimer"></div>
 
@@ -845,7 +877,7 @@ a { color:var(--teal); }
 // ═══════════════════════════════════════════════════════════════════════════════
 const MODEL   = 'claude-sonnet-4-20250514';
 const API_URL = 'https://api.anthropic.com/v1/messages';
-const SK      = { key:'cps_api_key', lang:'cps_lang', log:'cps_log', theme:'cps_theme' };
+const SK      = { key:'cps_api_key', lang:'cps_lang', log:'cps_log', theme:'cps_theme', accessKey:'nf_access_key' };
 
 const SUN_SVG = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`;
 const MOON_SVG = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`;
@@ -975,15 +1007,15 @@ const TRANSLATIONS = {
     tab_analyze:'Analizuj', tab_log:'Dziennik', tab_settings:'Ustawienia',
     settings_title:'Ustawienia',
     security_badge:'Dane tylko lokalnie',
-    key_label:'Klucz API Anthropic',
-    key_hint:'Klucz przechowywany wyłącznie na tym urządzeniu. Wysyłany tylko bezpośrednio do API Anthropic.',
+    key_label:'Klucz dostępu NarcFilter',
+    key_hint:'Klucz w formacie NF-XXXXX-XXXXX. Przechowywany wyłącznie na tym urządzeniu.',
     key_show:'Pokaż', key_hide:'Ukryj',
     btn_save_settings:'Zapisz ustawienia',
     settings_note:'Klucz API uzyskasz na platform.anthropic.com. Każda analiza zużywa tokeny z Twojego konta Anthropic.',
     danger_zone_label:'Strefa danych',
     btn_clear_all:'Usuń wszystkie dane i klucz API',
     open_settings:'Otwórz ustawienia',
-    no_key_msg:'Aby korzystać z aplikacji, dodaj klucz API Anthropic w ustawieniach.',
+    no_key_msg:'Aby korzystać z aplikacji, wprowadź klucz dostępu NarcFilter w ustawieniach.',
     input_label:'Wiadomość do analizy',
     input_ph:'Wklej tutaj wiadomość, którą chcesz przeanalizować...',
     kbd_hint:'Ctrl+Enter aby analizować',
@@ -1000,8 +1032,8 @@ const TRANSLATIONS = {
     toast_cleared:'Dziennik wyczyszczony', toast_copied:'Skopiowano!',
     toast_settings:'Ustawienia zapisane', toast_cleared_all:'Wszystkie dane usunięte',
     err_empty:'Wpisz lub wklej wiadomość do analizy.',
-    err_no_key:'Brak klucza API. Dodaj go w ustawieniach.',
-    err_invalid_key:'Nieprawidłowy klucz API. Sprawdź ustawienia.',
+    err_no_key:'Brak klucza dostępu. Dodaj go w ustawieniach.',
+    err_invalid_key:'Klucz dostępu jest nieprawidłowy lub wygasł. Sprawdź ustawienia.',
     err_network:'Brak połączenia z internetem.',
     err_rate:'Limit zapytań przekroczony. Poczekaj chwilę.',
     err_api:'Błąd serwera API. Spróbuj ponownie.',
@@ -1015,8 +1047,8 @@ const TRANSLATIONS = {
     tab_analyze:'Analyze', tab_log:'Log', tab_settings:'Settings',
     settings_title:'Settings',
     security_badge:'Local storage only',
-    key_label:'Anthropic API Key',
-    key_hint:'Key stored only on this device. Sent only directly to the Anthropic API.',
+    key_label:'NarcFilter Access Key',
+    key_hint:'Key in NF-XXXXX-XXXXX format. Stored only on this device.',
     key_show:'Show', key_hide:'Hide',
     btn_save_settings:'Save settings',
     settings_note:'Get your API key at platform.anthropic.com. Each analysis uses tokens from your account.',
@@ -1059,6 +1091,7 @@ const TRANSLATIONS = {
 const S = {
   lang:       'pl',
   apiKey:     '',
+  accessKey:  '',
   log:        [],
   loading:    false,
   lastResult: null,
@@ -1222,30 +1255,27 @@ const Legal = {
 // ═══════════════════════════════════════════════════════════════════════════════
 const Api = {
   async call(message) {
-    const res = await fetch(API_URL, {
+    if (!S.accessKey) throw new Error('NO_KEY');
+
+    const res = await fetch('/api/analyze', {
       method: 'POST',
-      headers: {
-        'x-api-key': S.apiKey,
-        'anthropic-version': '2023-06-01',
-        'content-type': 'application/json',
-        'anthropic-dangerous-direct-browser-access': 'true',
-      },
-      body: JSON.stringify({
-        model:      MODEL,
-        max_tokens: 1500,
-        system:     S.lang === 'pl' ? PROMPT_PL : PROMPT_EN,
-        messages:   [{ role: 'user', content: message }],
-      }),
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ message, lang: S.lang, accessKey: S.accessKey }),
     });
+
+    if (res.status === 403) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(`KEY_INVALID:${data.reason || 'Nieprawidłowy klucz'}`);
+    }
 
     if (!res.ok) {
       let msg = `HTTP ${res.status}`;
-      try { const e = await res.json(); msg = e?.error?.message || msg; } catch {}
+      try { const e = await res.json(); msg = e?.error || msg; } catch {}
       throw new Error(msg);
     }
 
     const data = await res.json();
-    return data.content[0].text;
+    return data.result;
   },
 };
 
@@ -1436,6 +1466,8 @@ const Analyzer = {
   },
 
   classifyError(msg) {
+    if (msg === 'NO_KEY')                                        return I18n.t('err_no_key');
+    if (/^KEY_INVALID:/i.test(msg))                             return msg.replace('KEY_INVALID:', '');
     if (/401|authentication|invalid/i.test(msg))               return I18n.t('err_invalid_key');
     if (!navigator.onLine || /fetch|network|failed/i.test(msg)) return I18n.t('err_network');
     if (/429|rate/i.test(msg))                                  return I18n.t('err_rate');
@@ -1543,16 +1575,15 @@ const Log = {
 const Settings = {
 
   open() {
-    UI.$('api-key-input').value = S.apiKey;
-    UI.$('api-key-input').type  = 'password';
+    UI.$('api-key-input').value = S.accessKey;
     const showBtn = UI.$('btn-toggle-key');
     if (showBtn) showBtn.textContent = I18n.t('key_show');
     UI.setPanel('settings');
   },
 
   save() {
-    const k = UI.$('api-key-input').value.trim();
-    S.apiKey = k; Store.set(SK.key, k);
+    const k = UI.$('api-key-input').value.trim().toUpperCase();
+    S.accessKey = k; Store.set(SK.accessKey, k);
     this.refreshKeyState(); UI.toast(I18n.t('toast_settings'));
     if (k) UI.setPanel('analyzer');
   },
@@ -1565,7 +1596,7 @@ const Settings = {
   },
 
   refreshKeyState() {
-    const has = !!S.apiKey;
+    const has = !!S.accessKey;
     UI.$('no-key-warning').classList.toggle('hidden', has);
     UI.$('analyzer-input').classList.toggle('hidden', !has);
   },
@@ -1573,7 +1604,7 @@ const Settings = {
   clearAll() {
     if (!confirm(I18n.t('confirm_clear_all'))) return;
     S.log = []; Store.setJ(SK.log, S.log);
-    S.apiKey = ''; Store.set(SK.key, '');
+    S.accessKey = ''; Store.set(SK.accessKey, '');
     UI.$('api-key-input').value = '';
     this.refreshKeyState();
     Render.log();
@@ -1634,6 +1665,18 @@ function setupEvents() {
   UI.$('btn-pl').addEventListener('click', () => I18n.setLang('pl'));
   UI.$('btn-en').addEventListener('click', () => I18n.setLang('en'));
 
+  // Access key overlay
+  UI.$('btn-overlay-save').addEventListener('click', () => {
+    const k = UI.$('overlay-key-input').value.trim().toUpperCase();
+    if (!k) return;
+    S.accessKey = k; Store.set(SK.accessKey, k);
+    UI.$('access-key-overlay').classList.add('hidden');
+    Settings.refreshKeyState();
+  });
+  UI.$('overlay-key-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') UI.$('btn-overlay-save').click();
+  });
+
   // Theme toggle
   UI.$('btn-theme').addEventListener('click', () => {
     const next = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
@@ -1684,15 +1727,20 @@ function applyTheme(t) {
 }
 
 function init() {
-  S.lang   = Store.get(SK.lang, 'pl');
-  S.apiKey = Store.get(SK.key, '');
-  S.log    = Store.getJ(SK.log, []);
+  S.lang      = Store.get(SK.lang, 'pl');
+  S.apiKey    = Store.get(SK.key, '');
+  S.accessKey = Store.get(SK.accessKey, '');
+  S.log       = Store.getJ(SK.log, []);
 
   I18n.updateAll();
   Settings.refreshKeyState();
   Render.log();
   setupEvents();
   applyTheme(Store.get(SK.theme, 'dark'));
+
+  if (!S.accessKey) {
+    UI.$('access-key-overlay').classList.remove('hidden');
+  }
 }
 
 init();

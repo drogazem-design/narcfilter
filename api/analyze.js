@@ -1,6 +1,8 @@
 // NarcFilter — /api/analyze.js
-// Vercel serverless function: proxies messages to Anthropic API.
-// The ANTHROPIC_API_KEY env var is set in the Vercel dashboard — never in code.
+// Verifies NF access key, then proxies to Anthropic API.
+// Env vars: ANTHROPIC_API_KEY, KV_REST_API_URL, KV_REST_API_TOKEN
+
+import { verifyAndDecrementKey } from './_verifyKeyLogic.js';
 
 const SYSTEM_PROMPT = `Rola AI: asystent analizy komunikacji dla osób w kontakcie z kimś o wzorcach narcystycznych. Nie terapeuta, nie prawnik.
 
@@ -76,15 +78,25 @@ TWARDE LIMITY:
 — nigdy nie używaj nawiasów kwadratowych w opcjach odpowiedzi`;
 
 export default async function handler(req, res) {
-  // Only allow POST
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
-    const { message, lang } = req.body ?? {};
+    const { message, lang, accessKey } = req.body ?? {};
 
-    // Validate input
+    // Validate access key format
+    if (!accessKey || typeof accessKey !== 'string' || !/^NF-[A-Z0-9]{5}-[A-Z0-9]{5}$/.test(accessKey)) {
+      return res.status(403).json({ error: 'Nieprawidłowy klucz', reason: 'Nieprawidłowy format klucza' });
+    }
+
+    // Verify key and decrement usage
+    const keyResult = await verifyAndDecrementKey(accessKey);
+    if (!keyResult.valid) {
+      return res.status(403).json({ error: 'Nieprawidłowy klucz', reason: keyResult.reason });
+    }
+
+    // Validate message
     if (!message || typeof message !== 'string' || message.trim().length === 0) {
       return res.status(400).json({ error: 'Missing or empty message' });
     }
@@ -92,18 +104,16 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Message too long (max 8000 characters)' });
     }
 
-    // Language instruction appended to system prompt
     const langInstruction = lang === 'en'
       ? '\n\nRespond entirely in English.'
       : '\n\nRespond entirely in Polish.';
 
-    // Call Anthropic API — key comes from environment, never the client
     const anthropicRes = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
-        'x-api-key':           process.env.ANTHROPIC_API_KEY,
-        'anthropic-version':   '2023-06-01',
-        'content-type':        'application/json',
+        'x-api-key':         process.env.ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01',
+        'content-type':      'application/json',
       },
       body: JSON.stringify({
         model:      'claude-sonnet-4-20250514',
@@ -123,17 +133,7 @@ export default async function handler(req, res) {
     const anthropicData = await anthropicRes.json();
     const rawText = anthropicData?.content?.[0]?.text ?? '';
 
-    // Parse the JSON response from the model
-    let parsed;
-    try {
-      const jsonText = rawText.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
-      parsed = JSON.parse(jsonText);
-    } catch {
-      console.error('Failed to parse AI response as JSON:', rawText.slice(0, 200));
-      return res.status(500).json({ error: 'AI returned an unexpected format. Please try again.' });
-    }
-
-    return res.status(200).json(parsed);
+    return res.status(200).json({ result: rawText });
 
   } catch (err) {
     console.error('analyze handler error:', err);
