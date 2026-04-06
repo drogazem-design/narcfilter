@@ -5,6 +5,7 @@ import { Redis } from '@upstash/redis';
 import { Resend } from 'resend';
 
 export const PACKAGES = {
+  starter:   { queriesRemaining: 10,  daysValid: null },
   monthly:   { queriesRemaining: 100, daysValid: 30  },
   quarterly: { queriesRemaining: 500, daysValid: 90  },
   addon:     { queriesRemaining: 10,  daysValid: null },
@@ -17,7 +18,7 @@ export function generateKey() {
 }
 
 function emailHtml(key, packageType, expiresAt) {
-  const packageLabels = { monthly: 'Miesięczny (100 analiz)', quarterly: 'Kwartalny (500 analiz)', addon: 'Doładowanie (10 analiz)' };
+  const packageLabels = { starter: 'Starter (10 analiz)', monthly: 'Miesięczny (100 analiz)', quarterly: 'Kwartalny (500 analiz)', addon: 'Doładowanie (10 analiz)' };
   const expiryLine = expiresAt
     ? `<p>Ważny do: <strong>${new Date(expiresAt).toLocaleDateString('pl-PL')}</strong></p>`
     : `<p>Ważność: <strong>bezterminowo</strong></p>`;

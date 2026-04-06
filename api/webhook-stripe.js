@@ -3,7 +3,7 @@
 // Env vars required: STRIPE_WEBHOOK_SECRET, KV_REST_API_URL, KV_REST_API_TOKEN, RESEND_API_KEY
 
 import Stripe from 'stripe';
-import { PACKAGES, createAndDeliverKey } from './_generateKeyLogic.js';
+import { createAndDeliverKey } from './_generateKeyLogic.js';
 
 // Disable Vercel's body parser — Stripe signature verification requires the raw body.
 export const config = { api: { bodyParser: false } };
@@ -17,24 +17,20 @@ async function getRawBody(req) {
   });
 }
 
-// Maps Stripe product names (from metadata.product_name) to NarcFilter package types.
-// Update keys to match the exact product names you set in Stripe.
-const PRODUCT_MAP = {
-  monthly:   'monthly',
-  quarterly: 'quarterly',
-  addon:     'addon',
-};
+// Amount-to-package mapping (amount_total in grosz, 1 PLN = 100 grosz).
+// Exact match preferred; falls back to nearest lower threshold.
+const AMOUNT_MAP = [
+  { amount: 5900, packageType: 'quarterly' }, // 59 PLN → 500 analiz
+  { amount: 2900, packageType: 'monthly'   }, // 29 PLN → 100 analiz
+  { amount:  900, packageType: 'starter'   }, //  9 PLN →  10 analiz
+];
 
 function resolvePackageType(session) {
-  // 1. Prefer explicit metadata field
-  const meta = session.metadata?.product_name?.toLowerCase();
-  if (meta && PRODUCT_MAP[meta]) return PRODUCT_MAP[meta];
-
-  // 2. Fall back to amount_total (in grosz/cents)
   const amount = session.amount_total ?? 0;
-  if (amount >= 20000) return 'quarterly';  // ≥ 200 PLN → quarterly
-  if (amount >= 5000)  return 'monthly';    // ≥  50 PLN → monthly
-  return 'addon';
+  for (const { amount: threshold, packageType } of AMOUNT_MAP) {
+    if (amount >= threshold) return packageType;
+  }
+  return 'starter'; // safest fallback
 }
 
 export default async function handler(req, res) {
@@ -73,11 +69,6 @@ export default async function handler(req, res) {
 
   try {
     const packageType = resolvePackageType(session);
-    if (!PACKAGES[packageType]) {
-      console.error(`webhook-stripe: unknown packageType "${packageType}" for session`, session.id);
-      return res.status(200).json({ received: true, warning: 'unknown package type' });
-    }
-
     const { key } = await createAndDeliverKey({ packageType, customerEmail: email });
     console.log(`webhook-stripe: key ${key} created for ${email} (${packageType}), session ${session.id}`);
     return res.status(200).json({ received: true, key });

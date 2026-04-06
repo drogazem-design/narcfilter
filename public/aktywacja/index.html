@@ -3,16 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Aktywacja klucza — NarcFilter</title>
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230f1923'/><path d='M16 4 L26 8 L26 18 C26 23.5 16 28 16 28 C16 28 6 23.5 6 18 L6 8 Z' fill='%232D7A6B'/><text x='16' y='22' text-anchor='middle' font-family='sans-serif' font-weight='bold' font-size='14' fill='white'>N</text></svg>" />
+  <title>Odbierz klucz dostępu — NarcFilter</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230f1923'/><path d='M16 4 L26 8 L26 18 C26 23.5 16 28 16 28 C16 28 6 23.5 6 18 L6 8 Z' fill='%2300d4aa'/><text x='16' y='22' text-anchor='middle' font-family='sans-serif' font-weight='bold' font-size='14' fill='white'>N</text></svg>" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
-      font-family: 'DM Sans', sans-serif;
-      background: #0c1821;
-      color: #dff0ec;
+      font-family: 'Inter', sans-serif;
+      background: #0b1520;
+      color: #e2f0ed;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
@@ -20,116 +21,168 @@
       justify-content: center;
       padding: 24px;
       background-image:
-        radial-gradient(ellipse 80% 50% at 8% 0%,   rgba(45,122,107,0.07) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 60% at 92% 100%, rgba(0,130,180,0.10) 0%, transparent 55%);
+        radial-gradient(ellipse 70% 50% at 15% 0%,   rgba(0,212,170,0.06) 0%, transparent 55%),
+        radial-gradient(ellipse 50% 60% at 85% 100%,  rgba(0,180,220,0.07) 0%, transparent 50%);
     }
-    .box {
-      width: 100%; max-width: 400px;
-      background: rgba(16,36,52,0.85);
-      border: 1px solid rgba(255,255,255,0.09);
-      border-radius: 16px;
-      padding: 40px 32px 32px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-      text-align: center;
+
+    .card {
+      width: 100%; max-width: 420px;
+      background: rgba(14, 28, 44, 0.9);
+      border: 1px solid rgba(0,212,170,0.15);
+      border-radius: 20px;
+      padding: 44px 36px 36px;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.5);
     }
-    .logo {
-      font-family: 'DM Serif Display', serif;
-      font-size: 1.5rem;
-      background: linear-gradient(120deg, #3a9080 0%, #2D7A6B 55%, #215a4e 100%);
+
+    /* Logo */
+    .logo-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 32px;
+    }
+    .logo-shield {
+      width: 48px; height: 52px;
+      margin-bottom: 12px;
+    }
+    .logo-name {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      background: linear-gradient(120deg, #00d4aa 0%, #00b894 60%, #009e7e 100%);
       -webkit-background-clip: text;
       background-clip: text;
       -webkit-text-fill-color: transparent;
-      margin-bottom: 6px;
     }
-    .subtitle {
-      font-size: 0.82rem;
-      color: #5a8880;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
+
+    /* Heading */
+    h1 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #e2f0ed;
+      text-align: center;
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+    .subtext {
+      font-size: 0.88rem;
+      color: #4a7a70;
+      text-align: center;
+      line-height: 1.6;
       margin-bottom: 32px;
     }
-    h1 {
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: #dff0ec;
+
+    /* Input */
+    label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #4a7a70;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
       margin-bottom: 8px;
     }
-    p.desc {
-      font-size: 0.88rem;
-      color: #5a8880;
-      line-height: 1.6;
-      margin-bottom: 28px;
-    }
-    input {
+    input[type="email"] {
       width: 100%;
-      background: rgba(22,44,64,0.9);
-      border: 1px solid rgba(255,255,255,0.09);
-      border-radius: 10px;
-      padding: 12px 16px;
+      background: rgba(0,0,0,0.25);
+      border: 1px solid rgba(0,212,170,0.18);
+      border-radius: 12px;
+      padding: 14px 16px;
       font-family: inherit;
       font-size: 1rem;
-      color: #dff0ec;
+      color: #e2f0ed;
       outline: none;
-      margin-bottom: 12px;
-      transition: border-color 0.2s;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      margin-bottom: 16px;
     }
-    input:focus { border-color: #2D7A6B; }
-    input::placeholder { color: #294540; }
+    input[type="email"]:focus {
+      border-color: #00d4aa;
+      box-shadow: 0 0 0 3px rgba(0,212,170,0.12);
+    }
+    input[type="email"]::placeholder { color: rgba(74,122,112,0.6); }
+
+    /* Button */
     button {
       width: 100%;
-      background: #2D7A6B;
-      color: #0c1821;
+      background: #00d4aa;
+      color: #0b1520;
       border: none;
-      border-radius: 10px;
-      padding: 13px;
+      border-radius: 12px;
+      padding: 14px;
       font-family: inherit;
       font-size: 0.95rem;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
-      transition: background 0.2s;
+      transition: background 0.2s, transform 0.1s;
+      letter-spacing: 0.01em;
     }
-    button:hover:not(:disabled) { background: #3a9080; }
-    button:disabled { opacity: 0.6; cursor: default; }
+    button:hover:not(:disabled) {
+      background: #00bfa0;
+      transform: translateY(-1px);
+    }
+    button:active:not(:disabled) { transform: translateY(0); }
+    button:disabled { opacity: 0.55; cursor: default; }
+
+    /* Messages */
     .msg {
-      margin-top: 18px;
-      padding: 13px 16px;
-      border-radius: 10px;
+      margin-top: 16px;
+      padding: 14px 16px;
+      border-radius: 12px;
       font-size: 0.88rem;
-      line-height: 1.5;
+      line-height: 1.6;
       display: none;
     }
     .msg.success {
-      background: rgba(45,122,107,0.12);
-      border: 1px solid rgba(45,122,107,0.28);
-      color: #3a9080;
+      background: rgba(0,212,170,0.1);
+      border: 1px solid rgba(0,212,170,0.25);
+      color: #00d4aa;
       display: block;
     }
     .msg.error {
-      background: rgba(224,92,92,0.1);
-      border: 1px solid rgba(224,92,92,0.25);
-      color: #e05c5c;
+      background: rgba(224,92,92,0.09);
+      border: 1px solid rgba(224,92,92,0.22);
+      color: #e87070;
       display: block;
     }
+
+    /* Back link */
     .back {
       display: block;
+      text-align: center;
       margin-top: 24px;
       font-size: 0.82rem;
-      color: #5a8880;
+      color: #2a5a52;
       text-decoration: none;
+      transition: color 0.2s;
     }
-    .back:hover { color: #2D7A6B; }
+    .back:hover { color: #00d4aa; }
   </style>
 </head>
 <body>
-  <div class="box">
-    <div class="logo">NarcFilter</div>
-    <div class="subtitle">Kompas Rozwodowy</div>
+  <div class="card">
+    <div class="logo-wrap">
+      <svg class="logo-shield" viewBox="0 0 48 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M24 2L6 9v13c0 12.7 7.8 23.3 18 27 10.2-3.7 18-14.3 18-27V9L24 2z"
+              fill="url(#sg)"/>
+        <text x="24" y="35" text-anchor="middle" font-family="sans-serif" font-weight="700"
+              font-size="26" fill="rgba(255,255,255,0.95)">N</text>
+        <defs>
+          <linearGradient id="sg" x1="6" y1="2" x2="42" y2="52" gradientUnits="userSpaceOnUse">
+            <stop offset="0%"   stop-color="#00d4aa"/>
+            <stop offset="55%"  stop-color="#00a884"/>
+            <stop offset="100%" stop-color="#007d62"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <span class="logo-name">NarcFilter</span>
+    </div>
 
-    <h1>Aktywuj dostęp</h1>
-    <p class="desc">Podaj adres email użyty przy zakupie — wyślemy Ci klucz dostępu ponownie.</p>
+    <h1>Odbierz swój klucz dostępu</h1>
+    <p class="subtext">Wpisz adres email użyty przy zakupie — wyślemy Ci klucz ponownie.</p>
 
+    <label for="email-input">Adres email</label>
     <input type="email" id="email-input" placeholder="twoj@email.pl" autocomplete="email" />
-    <button id="btn-send" type="button">Wyślij klucz na email</button>
+    <button id="btn-send" type="button">Wyślij klucz</button>
 
     <div class="msg" id="msg"></div>
 
@@ -163,7 +216,7 @@
         const data = await res.json();
 
         if (data.success) {
-          showMsg('Klucz został wysłany! Sprawdź skrzynkę (i folder spam).', 'success');
+          showMsg('Gotowe! Klucz został wysłany na podany adres. Sprawdź skrzynkę (i folder spam).', 'success');
           input.value = '';
         } else {
           showMsg(data.error ?? 'Wystąpił błąd. Spróbuj ponownie.', 'error');
@@ -172,7 +225,7 @@
         showMsg('Brak połączenia z internetem. Spróbuj ponownie.', 'error');
       } finally {
         btn.disabled    = false;
-        btn.textContent = 'Wyślij klucz na email';
+        btn.textContent = 'Wyślij klucz';
       }
     }
 
