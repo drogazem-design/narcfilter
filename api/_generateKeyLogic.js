@@ -3,22 +3,31 @@
 
 import { Redis } from '@upstash/redis';
 import { Resend } from 'resend';
+import { checkEnv } from './_checkEnv.js';
+
+checkEnv('KV_REST_API_URL', 'KV_REST_API_TOKEN', 'RESEND_API_KEY');
+
+const redis = new Redis({
+  url:   process.env.KV_REST_API_URL,
+  token: process.env.KV_REST_API_TOKEN,
+});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const PACKAGES = {
   starter:   { queriesRemaining: 10,  daysValid: null },
-  monthly:   { queriesRemaining: 100, daysValid: 30  },
-  quarterly: { queriesRemaining: 500, daysValid: 90  },
+  standard:  { queriesRemaining: 100, daysValid: null },
+  pro:       { queriesRemaining: 500, daysValid: null },
   addon:     { queriesRemaining: 10,  daysValid: null },
 };
 
 export function generateKey() {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  const seg = () => Array.from({ length: 5 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+  const seg = () => Array.from(crypto.getRandomValues(new Uint8Array(5)), b => chars[b % chars.length]).join('');
   return `NF-${seg()}-${seg()}`;
 }
 
 function emailHtml(key, packageType, expiresAt) {
-  const packageLabels = { starter: 'Starter (10 analiz)', monthly: 'Miesięczny (100 analiz)', quarterly: 'Kwartalny (500 analiz)', addon: 'Doładowanie (10 analiz)' };
+  const packageLabels = { starter: 'Starter (10 analiz)', standard: 'Standard (100 analiz)', pro: 'Pro (500 analiz)', addon: 'Doładowanie (10 analiz)' };
   const expiryLine = expiresAt
     ? `<p>Ważny do: <strong>${new Date(expiresAt).toLocaleDateString('pl-PL')}</strong></p>`
     : `<p>Ważność: <strong>bezterminowo</strong></p>`;
@@ -64,15 +73,12 @@ export async function createAndDeliverKey({ packageType, customerEmail }) {
     createdAt: now.toISOString(),
   };
 
-  const redis = new Redis({
-    url:   process.env.KV_REST_API_URL,
-    token: process.env.KV_REST_API_TOKEN,
-  });
-  await redis.set(key, record);
-  // Reverse index: allows looking up key by email (used by /api/aktywacja-check)
-  await redis.set(`email:${customerEmail.toLowerCase()}`, key);
+  await redis.pipeline()
+    .set(key, record)
+    // Reverse index: allows looking up key by email (used by /api/aktywacja-check)
+    .set(`email:${customerEmail.toLowerCase()}`, key)
+    .exec();
 
-  const resend = new Resend(process.env.RESEND_API_KEY);
   await resend.emails.send({
     from:    'kontakt@kompasrozwodowy.eu',
     to:      customerEmail,

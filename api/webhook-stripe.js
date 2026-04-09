@@ -3,7 +3,14 @@
 // Env vars required: STRIPE_WEBHOOK_SECRET, KV_REST_API_URL, KV_REST_API_TOKEN, RESEND_API_KEY
 
 import Stripe from 'stripe';
+import { Resend } from 'resend';
 import { createAndDeliverKey } from './_generateKeyLogic.js';
+import { checkEnv } from './_checkEnv.js';
+
+checkEnv('STRIPE_SECRET_KEY', 'STRIPE_WEBHOOK_SECRET', 'RESEND_API_KEY');
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 // Disable Vercel's body parser — Stripe signature verification requires the raw body.
 export const config = { api: { bodyParser: false } };
@@ -11,27 +18,29 @@ export const config = { api: { bodyParser: false } };
 async function getRawBody(req) {
   return new Promise((resolve, reject) => {
     const chunks = [];
-    req.on('data', chunk => chunks.push(chunk));
-    req.on('end', () => resolve(Buffer.concat(chunks)));
+    let totalBytes = 0;
+    let rejected = false;
+    const LIMIT = 1 * 1024 * 1024;
+    req.on('data', chunk => {
+      totalBytes += chunk.length;
+      if (totalBytes > LIMIT) {
+        rejected = true;
+        reject(new Error('Request body too large'));
+        req.destroy();
+        return;
+      }
+      chunks.push(chunk);
+    });
+    req.on('end', () => { if (!rejected) resolve(Buffer.concat(chunks)); });
     req.on('error', reject);
   });
 }
 
-// Amount-to-package mapping (amount_total in grosz, 1 PLN = 100 grosz).
-// Exact match preferred; falls back to nearest lower threshold.
-const AMOUNT_MAP = [
-  { amount: 5900, packageType: 'quarterly' }, // 59 PLN → 500 analiz
-  { amount: 2900, packageType: 'monthly'   }, // 29 PLN → 100 analiz
-  { amount:  900, packageType: 'starter'   }, //  9 PLN →  10 analiz
-];
-
-function resolvePackageType(session) {
-  const amount = session.amount_total ?? 0;
-  for (const { amount: threshold, packageType } of AMOUNT_MAP) {
-    if (amount >= threshold) return packageType;
-  }
-  return 'starter'; // safest fallback
-}
+const PAYMENT_LINK_MAP = {
+  'plink_1TK0NYDg3rjklSS3sYlIEbYR': 'starter',
+  'plink_1TK0Q8Dg3rjklSS3qVOP0Iif': 'standard',
+  'plink_1TK0QmDg3rjklSS3cpH6lEhl': 'pro',
+};
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -43,8 +52,7 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Could not read request body' });
   }
 
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-  const sig    = req.headers['stripe-signature'];
+  const sig = req.headers['stripe-signature'];
 
   let event;
   try {
@@ -67,15 +75,35 @@ export default async function handler(req, res) {
     return res.status(200).json({ received: true, warning: 'no email found' });
   }
 
+  const packageType = PAYMENT_LINK_MAP[session.payment_link];
+  if (!packageType) {
+    console.log(`webhook-stripe: ignoring payment_link ${session.payment_link}`);
+    return res.status(200).json({ received: true });
+  }
+
   try {
-    const packageType = resolvePackageType(session);
-    const { key } = await createAndDeliverKey({ packageType, customerEmail: email });
-    console.log(`webhook-stripe: key ${key} created for ${email} (${packageType}), session ${session.id}`);
-    return res.status(200).json({ received: true, key });
+    await createAndDeliverKey({ packageType, customerEmail: email });
+    console.log(`webhook-stripe: key created for ${email} (${packageType}), session ${session.id}`);
+    return res.status(200).json({ received: true });
 
   } catch (err) {
     console.error('webhook-stripe: createAndDeliverKey failed:', err);
-    // Return 200 to prevent Stripe from retrying — log the error for manual resolution.
-    return res.status(200).json({ received: true, error: err.message });
+    try {
+      await resend.emails.send({
+        from:    'kontakt@kompasrozwodowy.eu',
+        to:      'kontakt@kompasrozwodowy.eu',
+        subject: '[NarcFilter] Błąd dostawy klucza',
+        text: [
+          `Email klienta: ${email}`,
+          `Session ID: ${session.id}`,
+          `Pakiet: ${packageType}`,
+          `Błąd: ${err.message}`,
+        ].join('\n'),
+      });
+    } catch (alertErr) {
+      console.error('webhook-stripe: failed to send alert email:', alertErr);
+    }
+    // Return 200 to prevent Stripe from retrying.
+    return res.status(200).json({ received: true, error: 'Delivery failed' });
   }
 }

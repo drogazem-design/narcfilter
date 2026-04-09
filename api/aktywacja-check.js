@@ -4,6 +4,15 @@
 
 import { Redis } from '@upstash/redis';
 import { Resend } from 'resend';
+import { checkEnv } from './_checkEnv.js';
+
+checkEnv('KV_REST_API_URL', 'KV_REST_API_TOKEN', 'RESEND_API_KEY');
+
+const redis = new Redis({
+  url:   process.env.KV_REST_API_URL,
+  token: process.env.KV_REST_API_TOKEN,
+});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 function emailHtml(key) {
   return `<!DOCTYPE html><html lang="pl"><body style="font-family:sans-serif;max-width:560px;margin:0 auto;padding:24px;color:#1a2e28">
@@ -37,21 +46,12 @@ export default async function handler(req, res) {
       return res.status(400).json({ success: false, error: 'Podaj prawidłowy adres email.' });
     }
 
-    const redis = new Redis({
-      url:   process.env.KV_REST_API_URL,
-      token: process.env.KV_REST_API_TOKEN,
-    });
-
     const key = await redis.get(`email:${email.toLowerCase()}`);
 
     if (!key) {
-      return res.status(404).json({
-        success: false,
-        error: 'Nie znaleziono zakupu dla tego adresu email. Jeśli właśnie kupiłeś/aś, poczekaj chwilę i spróbuj ponownie.',
-      });
+      return res.status(200).json({ success: true });
     }
 
-    const resend = new Resend(process.env.RESEND_API_KEY);
     await resend.emails.send({
       from:    'kontakt@kompasrozwodowy.eu',
       to:      email,

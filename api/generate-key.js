@@ -3,10 +3,19 @@
 // Env vars required: KV_REST_API_URL, KV_REST_API_TOKEN, RESEND_API_KEY
 
 import { PACKAGES, createAndDeliverKey } from './_generateKeyLogic.js';
+import { checkEnv } from './_checkEnv.js';
+
+checkEnv('GENERATE_KEY_SECRET');
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ success: false, error: 'Method not allowed' });
+  }
+
+  const authHeader = req.headers['authorization'] ?? '';
+  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
+  if (!token || token !== process.env.GENERATE_KEY_SECRET) {
+    return res.status(401).json({ success: false, error: 'Unauthorized' });
   }
 
   try {
@@ -24,6 +33,6 @@ export default async function handler(req, res) {
 
   } catch (err) {
     console.error('generate-key error:', err);
-    return res.status(500).json({ success: false, error: err.message ?? 'Internal server error' });
+    return res.status(500).json({ success: false, error: 'Internal server error' });
   }
 }

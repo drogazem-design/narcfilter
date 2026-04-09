@@ -2,21 +2,43 @@
 // Used by both /api/verify-key and /api/analyze.
 
 import { Redis } from '@upstash/redis';
+import { checkEnv } from './_checkEnv.js';
+
+checkEnv('KV_REST_API_URL', 'KV_REST_API_TOKEN');
+
+const redis = new Redis({
+  url:   process.env.KV_REST_API_URL,
+  token: process.env.KV_REST_API_TOKEN,
+});
+
+// Atomic verify-and-decrement via Lua script — eliminates the read-modify-write race condition.
+// KEYS[1] = access key, ARGV[1] = current ISO timestamp for expiry check.
+// ISO 8601 UTC strings are lexicographically sortable, so string comparison is correct.
+// Returns a JSON-encoded result object that the JS side parses.
+const LUA_SCRIPT = `
+local raw = redis.call('GET', KEYS[1])
+if not raw then
+  return cjson.encode({status='not_found'})
+end
+local rec = cjson.decode(raw)
+if type(rec.expiresAt) == 'string' and ARGV[1] > rec.expiresAt then
+  return cjson.encode({status='expired'})
+end
+if rec.queriesRemaining <= 0 then
+  return cjson.encode({status='exhausted'})
+end
+rec.queriesRemaining = rec.queriesRemaining - 1
+redis.call('SET', KEYS[1], cjson.encode(rec))
+return cjson.encode({status='ok', queriesRemaining=rec.queriesRemaining, packageType=rec.packageType})
+`;
 
 export async function verifyAndDecrementKey(key) {
-  const redis = new Redis({
-    url:   process.env.KV_REST_API_URL,
-    token: process.env.KV_REST_API_TOKEN,
-  });
+  const raw = await redis.eval(LUA_SCRIPT, [key], [new Date().toISOString()]);
+  const result = typeof raw === 'string' ? JSON.parse(raw) : raw;
 
-  const record = await redis.get(key);
+  if (result.status === 'not_found')  return { valid: false, reason: 'Nieprawidłowy klucz' };
+  if (result.status === 'expired')    return { valid: false, reason: 'Klucz wygasł' };
+  if (result.status === 'exhausted')  return { valid: false, reason: 'Wyczerpano limit zapytań' };
 
-  if (!record)                                                return { valid: false, reason: 'Nieprawidłowy klucz' };
-  if (record.expiresAt && new Date(record.expiresAt) < new Date()) return { valid: false, reason: 'Klucz wygasł' };
-  if (record.queriesRemaining <= 0)                          return { valid: false, reason: 'Wyczerpano limit zapytań' };
-
-  const updated = { ...record, queriesRemaining: record.queriesRemaining - 1 };
-  await redis.set(key, updated);
-
-  return { valid: true, queriesRemaining: updated.queriesRemaining, packageType: record.packageType };
+  return { valid: true, queriesRemaining: result.queriesRemaining, packageType: result.packageType };
 }

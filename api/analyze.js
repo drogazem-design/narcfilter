@@ -3,6 +3,9 @@
 // Env vars: ANTHROPIC_API_KEY, KV_REST_API_URL, KV_REST_API_TOKEN
 
 import { verifyAndDecrementKey } from './_verifyKeyLogic.js';
+import { checkEnv } from './_checkEnv.js';
+
+checkEnv('ANTHROPIC_API_KEY');
 
 const SYSTEM_PROMPT = `Rola AI: asystent analizy komunikacji dla osób w kontakcie z kimś o wzorcach narcystycznych. Nie terapeuta, nie prawnik.
 
@@ -83,17 +86,15 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { message, lang, accessKey } = req.body ?? {};
+    const { message, lang } = req.body ?? {};
+
+    // Extract access key from Authorization header
+    const authHeader = req.headers['authorization'] ?? '';
+    const accessKey = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
 
     // Validate access key format
-    if (!accessKey || typeof accessKey !== 'string' || !/^NF-[A-Z0-9]{5}-[A-Z0-9]{5}$/.test(accessKey)) {
+    if (!accessKey || !/^NF-[A-Z0-9]{5}-[A-Z0-9]{5}$/.test(accessKey)) {
       return res.status(403).json({ error: 'Nieprawidłowy klucz', reason: 'Nieprawidłowy format klucza' });
-    }
-
-    // Verify key and decrement usage
-    const keyResult = await verifyAndDecrementKey(accessKey);
-    if (!keyResult.valid) {
-      return res.status(403).json({ error: 'Nieprawidłowy klucz', reason: keyResult.reason });
     }
 
     // Validate message
@@ -104,30 +105,50 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Message too long (max 8000 characters)' });
     }
 
+    // Verify key and decrement usage
+    const keyResult = await verifyAndDecrementKey(accessKey);
+    if (!keyResult.valid) {
+      return res.status(403).json({ error: 'Nieprawidłowy klucz', reason: keyResult.reason });
+    }
+
     const langInstruction = lang === 'en'
       ? '\n\nRespond entirely in English.'
       : '\n\nRespond entirely in Polish.';
 
-    const anthropicRes = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'x-api-key':         process.env.ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01',
-        'content-type':      'application/json',
-      },
-      body: JSON.stringify({
-        model:      'claude-sonnet-4-20250514',
-        max_tokens: 1500,
-        system:     SYSTEM_PROMPT + langInstruction,
-        messages:   [{ role: 'user', content: message.trim() }],
-      }),
-    });
+    const controller = new AbortController();
+    const timeoutId  = setTimeout(() => controller.abort(), 30_000);
+
+    let anthropicRes;
+    try {
+      anthropicRes = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        signal: controller.signal,
+        headers: {
+          'x-api-key':         process.env.ANTHROPIC_API_KEY,
+          'anthropic-version': '2023-06-01',
+          'content-type':      'application/json',
+        },
+        body: JSON.stringify({
+          model:      'claude-sonnet-4-20250514',
+          max_tokens: 1500,
+          system:     SYSTEM_PROMPT + langInstruction,
+          messages:   [{ role: 'user', content: message.trim() }],
+        }),
+      });
+    } catch (fetchErr) {
+      clearTimeout(timeoutId);
+      if (fetchErr.name === 'AbortError') {
+        return res.status(504).json({ error: 'Anthropic API timeout' });
+      }
+      throw fetchErr;
+    }
+    clearTimeout(timeoutId);
 
     if (!anthropicRes.ok) {
       const errBody = await anthropicRes.json().catch(() => ({}));
       const errMsg  = errBody?.error?.message ?? `Anthropic API error ${anthropicRes.status}`;
       console.error('Anthropic error:', anthropicRes.status, errMsg);
-      return res.status(anthropicRes.status).json({ error: errMsg });
+      return res.status(502).json({ error: errMsg });
     }
 
     const anthropicData = await anthropicRes.json();

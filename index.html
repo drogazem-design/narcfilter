@@ -1,178 +1,178 @@
-<!DOCTYPE html>
-<html lang="pl">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NarcFilter – Kompas Rozwodowy</title>
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230f1923'/><path d='M16 4 L26 8 L26 18 C26 23.5 16 28 16 28 C16 28 6 23.5 6 18 L6 8 Z' fill='%232D7A6B'/><text x='16' y='22' text-anchor='middle' font-family='sans-serif' font-weight='bold' font-size='14' fill='white'>N</text></svg>" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet" />
-  <style>
-
-/* ── VARIABLES ─────────────────────────────────────────────────────────────── */
-:root {
-  --header-h: 60px;
-  --max-w: 640px;
-
-  /* Palette — deep ocean */
-  --bg:        #0c1821;
-  --surface:   rgba(16,36,52,0.85);
-  --surface2:  rgba(22,44,64,0.9);
-  --border:    rgba(255,255,255,0.07);
-  --border-hi: rgba(255,255,255,0.13);
-
-  /* Accent — teal */
-  --teal:      #2D7A6B;
-  --teal-lt:   #3a9080;
-  --teal-dim:  rgba(45,122,107,0.12);
-  --teal-glow: rgba(45,122,107,0.28);
-
-  /* Text */
-  --text:      #dff0ec;
-  --muted:     #5a8880;
   --subtle:    #294540;
 
-  /* Pattern tags — warm coral */
-  --tag-bg:    rgba(255,100,70,0.12);
-  --tag-color: #ff7b5c;
-  --tag-bd:    rgba(255,100,70,0.26);
+        /* Pattern tags — warm coral */
+        --tag-bg:    rgba(255,100,70,0.12);
+        --tag-color: #ff7b5c;
+        --tag-bd:    rgba(255,100,70,0.26);
 
-  /* Options */
-  --opt-a-bg: rgba(90,140,125,0.09);  --opt-a-bd: #4da893;
-  --opt-b-bg: rgba(60,120,200,0.09);  --opt-b-bd: #5b94c4;
-  --opt-c-bg: rgba(80,160,100,0.09);  --opt-c-bd: #52a870;
+        /* Options */
+        --opt-a-bg: rgba(90,140,125,0.09);  --opt-a-bd: #4da893;
+        --opt-b-bg: rgba(60,120,200,0.09);  --opt-b-bd: #5b94c4;
+        --opt-c-bg: rgba(80,160,100,0.09);  --opt-c-bd: #52a870;
 
-  /* Status */
-  --err:      #e05c5c;
-  --err-bg:   rgba(224,92,92,0.1);
-  --err-bd:   rgba(224,92,92,0.25);
-  --warn-bg:  rgba(45,122,107,0.07);
-  --warn-bd:  rgba(45,122,107,0.18);
-  --warn-txt: #2D7A6B;
+        /* Status */
+        --err:      #e05c5c;
+        --err-bg:   rgba(224,92,92,0.1);
+        --err-bd:   rgba(224,92,92,0.25);
+        --warn-bg:  rgba(45,122,107,0.07);
+        --warn-bd:  rgba(45,122,107,0.18);
+        --warn-txt: #2D7A6B;
 
-  /* Geometry */
-  --radius:    16px;
-  --radius-sm: 10px;
-  --radius-xs: 6px;
-  --pill:      100px;
+        /* Geometry */
+        --radius:    16px;
+        --radius-sm: 10px;
+        --radius-xs: 6px;
+        --pill:      100px;
 
-  /* Shadows */
-  --shadow:    0 8px 32px rgba(0,0,0,0.5);
-  --shadow-sm: 0 2px 10px rgba(0,0,0,0.3);
-}
+        /* Shadows */
+        --shadow:    0 8px 32px rgba(0,0,0,0.5);
+        --shadow-sm: 0 2px 10px rgba(0,0,0,0.3);
 
-/* ── LIGHT MODE ─────────────────────────────────────────────────────────────── */
-:root[data-theme="light"] {
-  --bg:        #F4EFE6;
-  --surface:   rgba(255,252,245,0.92);
-  --surface2:  rgba(237,230,218,0.95);
-  --border:    rgba(45,122,107,0.13);
-  --border-hi: rgba(45,122,107,0.24);
-  --teal-dim:  rgba(45,122,107,0.10);
-  --teal-glow: rgba(45,122,107,0.22);
-  --text:      #1a2e28;
-  --muted:     #5a7a72;
-  --subtle:    #c8dfd8;
-  --opt-a-bg:  rgba(45,122,107,0.07);
-  --opt-b-bg:  rgba(60,120,200,0.07);
-  --opt-c-bg:  rgba(80,160,100,0.07);
-  --warn-bg:   rgba(45,122,107,0.08);
-  --warn-bd:   rgba(45,122,107,0.22);
-  --shadow:    0 8px 32px rgba(45,122,107,0.13);
-  --shadow-sm: 0 2px 10px rgba(45,122,107,0.09);
-}
-[data-theme="light"] body {
-  background-image:
-    radial-gradient(ellipse 80% 50% at 8% 0%,   rgba(45,122,107,0.09) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 60% at 92% 100%, rgba(180,210,200,0.18) 0%, transparent 55%);
-}
-[data-theme="light"] .header {
-  background: rgba(244,239,230,0.88);
-  border-bottom-color: rgba(45,122,107,0.13);
-}
-[data-theme="light"] .card {
-  background: rgba(255,252,245,0.88);
-}
-[data-theme="light"] .brand-name {
-  background: linear-gradient(120deg, #2D7A6B 0%, #1f5a4e 55%, #154035 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-}
-[data-theme="light"] .disclaimer-bar {
-  background: rgba(244,239,230,0.96);
-  border-top-color: rgba(45,122,107,0.18);
-  color: var(--muted);
-}
-[data-theme="light"] .option-desc { color: #5a7a72; }
-[data-theme="light"] .tab-nav {
-  background: rgba(237,230,218,0.8);
-  border-bottom-color: rgba(45,122,107,0.13);
-}
+      /* ── LIGHT MODE ─────────────────────────────────────────────────────────────── */
+      :root[data-theme="light"] {
+      --bg:        #F4EFE6;
+      --surface:   rgba(255,252,245,0.92);
+      --surface2:  rgba(237,230,218,0.95);
+      --border:    rgba(45,122,107,0.13);
+      --border-hi: rgba(45,122,107,0.24);
+      --teal-dim:  rgba(45,122,107,0.10);
+      --teal-glow: rgba(45,122,107,0.22);
+      --text:      #1a2e28;
+      --muted:     #5a7a72;
+      --subtle:    #c8dfd8;
+      --opt-a-bg:  rgba(45,122,107,0.07);
+      --opt-b-bg:  rgba(60,120,200,0.07);
+      --opt-c-bg:  rgba(80,160,100,0.07);
+      --warn-bg:   rgba(45,122,107,0.08);
+      --warn-bd:   rgba(45,122,107,0.22);
+      --shadow:    0 8px 32px rgba(45,122,107,0.13);
+      --shadow-sm: 0 2px 10px rgba(45,122,107,0.09);
+      }
+      [data-theme="light"] body {
+      background-image:
+      radial-gradient(ellipse 80% 50% at 8% 0%,   rgba(45,122,107,0.09) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 60% at 92% 100%, rgba(180,210,200,0.18) 0%, transparent 55%);
+      }
+      [data-theme="light"] .header {
+      background: rgba(244,239,230,0.88);
+      border-bottom-color: rgba(45,122,107,0.13);
+      }
+      [data-theme="light"] .card {
+      background: rgba(255,252,245,0.88);
+      }
+      [data-theme="light"] .brand-name {
+      background: linear-gradient(120deg, #2D7A6B 0%, #1f5a4e 55%, #154035 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      }
+      [data-theme="light"] .disclaimer-bar {
+      background: rgba(244,239,230,0.96);
+      border-top-color: rgba(45,122,107,0.18);
+      color: var(--muted);
+      }
+      [data-theme="light"] .option-desc { color: #5a7a72; }
+      [data-theme="light"] .tab-nav {
+      background: rgba(237,230,218,0.8);
+      border-bottom-color: rgba(45,122,107,0.13);
+      }
 
-/* ── RESET ──────────────────────────────────────────────────────────────────── */
-*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
-html { font-size:16px; -webkit-text-size-adjust:100%; }
-body {
-  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-  background-color: var(--bg);
-  color: var(--text);
-  line-height: 1.65;
-  min-height: 100vh;
-  background-image:
-    radial-gradient(ellipse 80% 50% at 8% 0%,   rgba(45,122,107,0.07) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 60% at 92% 100%, rgba(0,130,180,0.12) 0%, transparent 55%);
-  background-attachment: fixed;
-}
-button { font-family:inherit; cursor:pointer; border:none; background:none; }
-input, textarea { font-family:inherit; font-size:1rem; color:var(--text); }
-a { color:var(--teal); }
+      /* ── RESET ──────────────────────────────────────────────────────────────────── */
+      *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+      html { font-size:16px; -webkit-text-size-adjust:100%; }
+      body {
+      font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      min-height: 100vh;
+      background-image:
+      radial-gradient(ellipse 80% 50% at 8% 0%,   rgba(45,122,107,0.07) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 60% at 92% 100%, rgba(0,130,180,0.12) 0%, transparent 55%);
+      background-attachment: fixed;
+      }
+      button { font-family:inherit; cursor:pointer; border:none; background:none; }
+      input, textarea { font-family:inherit; font-size:1rem; color:var(--text); }
+      a { color:var(--teal); }
 
-/* ── APP ─────────────────────────────────────────────────────────────────────── */
-#app { min-height:100vh; display:flex; flex-direction:column; position:relative; }
+      /* ── APP ─────────────────────────────────────────────────────────────────────── */
+      #app { min-height:100vh; display:flex; flex-direction:column; position:relative; }
 
-/* ── HEADER ──────────────────────────────────────────────────────────────────── */
-.header {
-  background: rgba(12,24,33,0.9);
-  backdrop-filter: blur(20px) saturate(1.4);
-  -webkit-backdrop-filter: blur(20px) saturate(1.4);
-  border-bottom: 1px solid var(--border);
-  position: sticky; top:0; z-index:100;
-}
-.header-inner {
-  max-width: var(--max-w); margin:0 auto; padding:0 18px;
-  height: var(--header-h);
-  display:flex; align-items:center; justify-content:space-between;
-}
+      /* ── HEADER ──────────────────────────────────────────────────────────────────── */
+      .header {
+      background: rgba(12,24,33,0.9);
+      backdrop-filter: blur(20px) saturate(1.4);
+      -webkit-backdrop-filter: blur(20px) saturate(1.4);
+      border-bottom: 1px solid var(--border);
+      position: sticky; top:0; z-index:100;
+      }
+      .header-inner {
+      max-width: var(--max-w); margin:0 auto; padding:0 18px;
+      height: var(--header-h);
+      display:flex; align-items:center; justify-content:space-between;
+      }
 
-/* Brand */
-.brand { display:flex; align-items:center; gap:10px; text-decoration:none; }
-.brand-icon {
-  flex-shrink:0; position:relative;
-  filter: drop-shadow(0 0 6px var(--teal-glow));
-  animation: shieldGlow 4s ease-in-out infinite;
-}
-@keyframes shieldGlow {
-  0%,100% { filter:drop-shadow(0 0 4px rgba(45,122,107,0.22)); }
-  50%      { filter:drop-shadow(0 0 18px rgba(45,122,107,0.55)); }
-}
-.brand-text { display:flex; flex-direction:column; gap:0; }
-.brand-name {
-  font-family: 'DM Serif Display', Georgia, serif;
-  font-size: 1.2rem; font-weight:400; letter-spacing:0.01em;
-  background: linear-gradient(120deg, #3a9080 0%, #2D7A6B 55%, #215a4e 100%);
-  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-  background-clip:text; line-height:1.2;
-}
-.brand-tagline {
-  font-size: 0.67rem; color: var(--muted); letter-spacing:0.08em;
-  font-weight: 500; -webkit-text-fill-color: var(--muted);
-}
-.module-label {
-  font-size: 0.6rem; font-weight: 700;
-  color: var(--teal); background: var(--teal-dim);
-  border: 1px solid rgba(45,122,107,0.2);
-  border-radius: var(--pill); padding: 2px 9px;
+      /* Brand */
+      .brand { display:flex; align-items:center; gap:10px; text-decoration:none; }
+      .brand-icon {
+      flex-shrink:0; position:relative;
+      filter: drop-shadow(0 0 6px var(--teal-glow));
+      animation: shieldGlow 4s ease-in-out infinite;
+      }
+      @keyframes shieldGlow {
+      0%,100% { filter:drop-shadow(0 0 4px rgba(45,122,107,0.22)); }
+      50%      { filter:drop-shadow(0 0 18px rgba(45,122,107,0.55)); }
+      }
+      .brand-text { display:flex; flex-direction:column; gap:0; }
+      .brand-name {
+      font-family: 'DM Serif Display', Georgia, serif;
+      font-size: 1.2rem; font-weight:400; letter-spacing:0.01em;
+      background: linear-gradient(120deg, #3a9080 0%, #2D7A6B 55%, #215a4e 100%);
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+      background-clip:text; line-height:1.2;
+      }
+      .brand-tagline {
+      font-size: 0.67rem; color: var(--muted); letter-spacing:0.08em;
+      font-weight: 500; -webkit-text-fill-color: var(--muted);
+      }
+      .module-label {
+      font-size: 0.6rem; font-weight: 700;
+      color: var(--teal); background: var(--teal-dim);
+      border: 1px solid rgba(45,122,107,0.2);
+  <!DOCTYPE html>
+  <html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NarcFilter – Kompas Rozwodowy</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230f1923'/><path d='M16 4 L26 8 L26 18 C26 23.5 16 28 16 28 C16 28 6 23.5 6 18 L6 8 Z' fill='%232D7A6B'/><text x='16' y='22' text-anchor='middle' font-family='sans-serif' font-weight='bold' font-size='14' fill='white'>N</text></svg>" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet" />
+    <style>
+
+      /* ── VARIABLES ─────────────────────────────────────────────────────────────── */
+      :root {
+        --header-h: 60px;
+        --max-w: 640px;
+
+        /* Palette — deep ocean */
+        --bg:        #0c1821;
+        --surface:   rgba(16,36,52,0.85);
+        --surface2:  rgba(22,44,64,0.9);
+        --border:    rgba(255,255,255,0.07);
+        --border-hi: rgba(255,255,255,0.13);
+
+        /* Accent — teal */
+        --teal:      #2D7A6B;
+        --teal-lt:   #3a9080;
+        --teal-dim:  rgba(45,122,107,0.12);
+        --teal-glow: rgba(45,122,107,0.28);
+
+        /* Text */
+        --text:      #dff0ec;
+        --muted:     #5a8880;
+      }
+      border-radius: var(--pill); padding: 2px 9px;
   letter-spacing: 0.07em; text-transform: uppercase;
   white-space: nowrap; flex-shrink: 0;
   -webkit-text-fill-color: var(--teal);
@@ -1259,8 +1259,8 @@ const Api = {
 
     const res = await fetch('/api/analyze', {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ message, lang: S.lang, accessKey: S.accessKey }),
+      headers: { 'content-type': 'application/json', 'authorization': `Bearer ${S.accessKey}` },
+      body: JSON.stringify({ message, lang: S.lang }),
     });
 
     if (res.status === 403) {
