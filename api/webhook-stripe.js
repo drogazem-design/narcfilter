@@ -4,7 +4,7 @@
 
 import Stripe from 'stripe';
 import { Resend } from 'resend';
-import { createAndDeliverKey } from './_generateKeyLogic.js';
+import { createAndDeliverKey, isSessionProcessed, markSessionProcessed } from './_generateKeyLogic.js';
 import { checkEnv } from './_checkEnv.js';
 
 checkEnv('STRIPE_SECRET_KEY', 'STRIPE_WEBHOOK_SECRET', 'RESEND_API_KEY');
@@ -81,9 +81,15 @@ export default async function handler(req, res) {
     return res.status(200).json({ received: true });
   }
 
+  if (await isSessionProcessed(session.id)) {
+    console.log(`webhook-stripe: duplicate event ${session.id}, skipping`);
+    return res.status(200).json({ received: true });
+  }
+  await markSessionProcessed(session.id);
+
   try {
     await createAndDeliverKey({ packageType, customerEmail: email });
-    console.log(`webhook-stripe: key created for ${email} (${packageType}), session ${session.id}`);
+    console.log(`webhook-stripe: key created (${packageType}), session ${session.id}`);
     return res.status(200).json({ received: true });
 
   } catch (err) {

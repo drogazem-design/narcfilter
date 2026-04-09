@@ -1,16 +1,12 @@
 // Shared key generation logic.
 // Used by /api/generate-key and /api/webhook-naffy.
 
-import { Redis } from '@upstash/redis';
 import { Resend } from 'resend';
 import { checkEnv } from './_checkEnv.js';
+import { redis, withTimeout } from './_redis.js';
 
-checkEnv('KV_REST_API_URL', 'KV_REST_API_TOKEN', 'RESEND_API_KEY');
+checkEnv('RESEND_API_KEY');
 
-const redis = new Redis({
-  url:   process.env.KV_REST_API_URL,
-  token: process.env.KV_REST_API_TOKEN,
-});
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const PACKAGES = {
@@ -54,6 +50,20 @@ function emailHtml(key, packageType, expiresAt) {
 }
 
 /**
+ * Checks if a Stripe session was already processed (idempotency guard).
+ */
+export async function isSessionProcessed(sessionId) {
+  return (await withTimeout(redis.get(`session:${sessionId}`), 5000, 'isSessionProcessed')) !== null;
+}
+
+/**
+ * Marks a Stripe session as processed. TTL: 7 days.
+ */
+export async function markSessionProcessed(sessionId) {
+  await withTimeout(redis.set(`session:${sessionId}`, 1, { ex: 7 * 86_400 }), 5000, 'markSessionProcessed');
+}
+
+/**
  * Generates a key, saves it to Redis, and sends an email.
  * @returns {Promise<{ key: string }>}
  */
@@ -73,11 +83,14 @@ export async function createAndDeliverKey({ packageType, customerEmail }) {
     createdAt: now.toISOString(),
   };
 
-  await redis.pipeline()
-    .set(key, record)
-    // Reverse index: allows looking up key by email (used by /api/aktywacja-check)
-    .set(`email:${customerEmail.toLowerCase()}`, key)
-    .exec();
+  await withTimeout(
+    redis.pipeline()
+      .set(key, record)
+      // Reverse index: allows looking up key by email (used by /api/aktywacja-check)
+      .set(`email:${customerEmail.toLowerCase()}`, key)
+      .exec(),
+    5000, 'save key'
+  );
 
   await resend.emails.send({
     from:    'kontakt@kompasrozwodowy.eu',

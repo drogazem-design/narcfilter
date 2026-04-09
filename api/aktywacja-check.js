@@ -2,16 +2,12 @@
 // Looks up an existing key by email and resends it. Never generates a new key.
 // Env vars required: KV_REST_API_URL, KV_REST_API_TOKEN, RESEND_API_KEY
 
-import { Redis } from '@upstash/redis';
 import { Resend } from 'resend';
 import { checkEnv } from './_checkEnv.js';
+import { redis, withTimeout } from './_redis.js';
 
-checkEnv('KV_REST_API_URL', 'KV_REST_API_TOKEN', 'RESEND_API_KEY');
+checkEnv('RESEND_API_KEY');
 
-const redis = new Redis({
-  url:   process.env.KV_REST_API_URL,
-  token: process.env.KV_REST_API_TOKEN,
-});
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 function emailHtml(key) {
@@ -46,7 +42,12 @@ export default async function handler(req, res) {
       return res.status(400).json({ success: false, error: 'Podaj prawidłowy adres email.' });
     }
 
-    const key = await redis.get(`email:${email.toLowerCase()}`);
+    const rateLimitKey = `rate:aktywacja:${email.toLowerCase()}`;
+    const count = await withTimeout(redis.incr(rateLimitKey), 5000, 'rate limit incr');
+    if (count === 1) await withTimeout(redis.expire(rateLimitKey, 3600), 5000, 'rate limit expire');
+    if (count > 3) return res.status(200).json({ success: true });
+
+    const key = await withTimeout(redis.get(`email:${email.toLowerCase()}`), 5000, 'get key by email');
 
     if (!key) {
       return res.status(200).json({ success: true });
