@@ -128,7 +128,7 @@
       line-height:1.2;
       }
       .brand-tagline {
-      font-size: 0.67rem; color: var(--muted); letter-spacing:0.08em;
+      font-size: 0.75rem; color: var(--muted); letter-spacing:0.08em;
       font-weight: 500; -webkit-text-fill-color: var(--muted);
       }
       .module-label {
@@ -182,7 +182,7 @@
   border-radius:var(--pill); padding:3px;
 }
 .lang-btn {
-  padding:5px 13px; border-radius:var(--pill);
+  padding:8px 13px; border-radius:var(--pill);
   font-size:0.77rem; font-weight:600; color:var(--muted);
   letter-spacing:0.04em; transition:all 0.2s;
 }
@@ -192,7 +192,7 @@
 }
 .lang-btn:hover:not(.active) { color:var(--teal); }
 .btn-settings {
-  width:38px; height:38px; border-radius:var(--radius-sm);
+  width:44px; height:44px; border-radius:var(--radius-sm);
   color:var(--muted); font-size:1.1rem;
   display:flex; align-items:center; justify-content:center;
   transition:all 0.2s; border:1px solid transparent;
@@ -203,7 +203,7 @@
   transform:rotate(30deg);
 }
 .btn-theme {
-  width:38px; height:38px; border-radius:var(--radius-sm);
+  width:44px; height:44px; border-radius:var(--radius-sm);
   color:var(--muted); font-size:1rem;
   display:flex; align-items:center; justify-content:center;
   transition:all 0.2s; border:1px solid transparent;
@@ -674,6 +674,15 @@
   .card { padding:26px; }
 }
 
+/* ── REDUCED MOTION ──────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
   </style>
 </head>
 <body>
@@ -824,7 +833,7 @@
 </div>
 
 <!-- LEGAL MODAL -->
-<div id="legal-modal" class="legal-modal hidden" role="dialog" aria-modal="true">
+<div id="legal-modal" class="legal-modal hidden" role="dialog" aria-modal="true" aria-labelledby="legal-modal-title">
   <div class="legal-modal-box">
     <div class="legal-modal-header">
       <button class="legal-modal-close" onclick="Legal.close()" data-i18n="btn_close"></button>
@@ -1223,7 +1232,7 @@ const Legal = {
     const lines = this.TEXTS[S.lang][type];
     const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     const html = lines.map(([kind, text]) => {
-      if (kind === 'title')    return `<p class="legal-title">${esc(text)}</p>`;
+      if (kind === 'title')    return `<p id="legal-modal-title" class="legal-title">${esc(text)}</p>`;
       if (kind === 'subtitle') return `<p class="legal-subtitle">${esc(text)}</p>`;
       if (kind === 'section')  return `<p class="legal-section">${esc(text)}</p>`;
       return `<p class="legal-p">${esc(text)}</p>`;
