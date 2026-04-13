@@ -1,35 +1,70 @@
-  --subtle:    #294540;
+<!DOCTYPE html>
+  <html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NarcFilter – Kompas Rozwodowy</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230f1923'/><path d='M16 4 L26 8 L26 18 C26 23.5 16 28 16 28 C16 28 6 23.5 6 18 L6 8 Z' fill='%232D7A6B'/><text x='16' y='22' text-anchor='middle' font-family='sans-serif' font-weight='bold' font-size='14' fill='white'>N</text></svg>" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Epilogue:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Gloock&display=swap" rel="stylesheet" />
+    <style>
 
-        /* Pattern tags — warm coral */
-        --tag-bg:    rgba(255,100,70,0.12);
-        --tag-color: #ff7b5c;
-        --tag-bd:    rgba(255,100,70,0.26);
+      /* ── VARIABLES ─────────────────────────────────────────────────────────────── */
+      :root {
+        --header-h: 60px;
+        --max-w: 640px;
 
-        /* Options */
-        --opt-a-bg: rgba(90,140,125,0.09);  --opt-a-bd: #4da893;
-        --opt-b-bg: rgba(60,120,200,0.09);  --opt-b-bd: #5b94c4;
-        --opt-c-bg: rgba(80,160,100,0.09);  --opt-c-bd: #52a870;
+        /* Palette — deep ocean */
+        --bg:        #0c1821;
+        --surface:   rgba(16,36,52,0.85);
+        --surface2:  rgba(22,44,64,0.9);
+        --border:    rgba(255,255,255,0.07);
+        --border-hi: rgba(255,255,255,0.13);
 
-        /* Status */
-        --err:      #e05c5c;
-        --err-bg:   rgba(224,92,92,0.1);
-        --err-bd:   rgba(224,92,92,0.25);
-        --warn-bg:  rgba(45,122,107,0.07);
-        --warn-bd:  rgba(45,122,107,0.18);
-        --warn-txt: #2D7A6B;
-
-        /* Geometry */
-        --radius:    16px;
-        --radius-sm: 10px;
-        --radius-xs: 6px;
-        --pill:      100px;
-
-        /* Shadows */
-        --shadow:    0 8px 32px rgba(0,0,0,0.5);
-        --shadow-sm: 0 2px 10px rgba(0,0,0,0.3);
-
-      /* ── LIGHT MODE ─────────────────────────────────────────────────────────────── */
-      :root[data-theme="light"] {
+        /* Accent — teal */
+        --teal:      #2D7A6B;
+        --teal-lt:   #3a9080;
+        --teal-dim:  rgba(45,122,107,0.12);
+        --teal-glow: rgba(45,122,107,0.28);
+        /* Text */
+        --text:      #dff0ec;
+        --muted:       #7aada5;
+        --surface-focus: rgba(22,50,70,0.9);
+      --subtle:    #294540;
+      
+              /* Pattern tags — warm coral */
+              --tag-bg:    rgba(255,100,70,0.12);
+              --tag-color: #ff7b5c;
+              --tag-bd:    rgba(255,100,70,0.26);
+      
+              /* Options */
+              --opt-a-bg: rgba(90,140,125,0.09);  --opt-a-bd: #4da893;
+              --opt-b-bg: rgba(60,120,200,0.09);  --opt-b-bd: #5b94c4;
+              --opt-c-bg: rgba(80,160,100,0.09);  --opt-c-bd: #52a870;
+      
+              /* Status */
+              --err:      #e05c5c;
+              --err-bg:   rgba(224,92,92,0.1);
+              --err-bd:   rgba(224,92,92,0.25);
+              --warn-bg:  rgba(45,122,107,0.07);
+              --warn-bd:  rgba(45,122,107,0.18);
+              --warn-txt: #2D7A6B;
+      
+              /* Geometry */
+              --radius:    16px;
+              --radius-sm: 10px;
+              --radius-xs: 6px;
+              --pill:      100px;
+      
+              /* Shadows */
+              --shadow:    0 8px 32px rgba(0,0,0,0.5);
+              --shadow-sm: 0 2px 10px rgba(0,0,0,0.3);
+      
+            /* ── LIGHT MODE ─────────────────────────────────────────────────────────────── */
+      
+      }
+:root[data-theme="light"] {
       --bg:        #F4EFE6;
       --surface:   rgba(255,252,245,0.92);
       --surface2:  rgba(237,230,218,0.95);
@@ -135,45 +170,12 @@
       font-size: 0.6rem; font-weight: 700;
       color: var(--teal); background: var(--teal-dim);
       border: 1px solid rgba(45,122,107,0.2);
-  <!DOCTYPE html>
-  <html lang="pl">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>NarcFilter – Kompas Rozwodowy</title>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230f1923'/><path d='M16 4 L26 8 L26 18 C26 23.5 16 28 16 28 C16 28 6 23.5 6 18 L6 8 Z' fill='%232D7A6B'/><text x='16' y='22' text-anchor='middle' font-family='sans-serif' font-weight='bold' font-size='14' fill='white'>N</text></svg>" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Epilogue:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Gloock&display=swap" rel="stylesheet" />
-    <style>
-
-      /* ── VARIABLES ─────────────────────────────────────────────────────────────── */
-      :root {
-        --header-h: 60px;
-        --max-w: 640px;
-
-        /* Palette — deep ocean */
-        --bg:        #0c1821;
-        --surface:   rgba(16,36,52,0.85);
-        --surface2:  rgba(22,44,64,0.9);
-        --border:    rgba(255,255,255,0.07);
-        --border-hi: rgba(255,255,255,0.13);
-
-        /* Accent — teal */
-        --teal:      #2D7A6B;
-        --teal-lt:   #3a9080;
-        --teal-dim:  rgba(45,122,107,0.12);
-        --teal-glow: rgba(45,122,107,0.28);
-        /* Text */
-        --text:      #dff0ec;
-        --muted:       #7aada5;
-        --surface-focus: rgba(22,50,70,0.9);
-      }
       border-radius: var(--pill); padding: 2px 9px;
   letter-spacing: 0.07em; text-transform: uppercase;
   white-space: nowrap; flex-shrink: 0;
   -webkit-text-fill-color: var(--teal);
 }
+
 
 /* Header controls */
 .header-controls { display:flex; align-items:center; gap:10px; }
