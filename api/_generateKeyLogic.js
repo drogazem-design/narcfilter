@@ -26,7 +26,7 @@ function emailHtml(key, packageType, expiresAt) {
   const packageLabels = { starter: 'Starter (10 analiz)', standard: 'Standard (100 analiz)', pro: 'Pro (500 analiz)', addon: 'Doładowanie (10 analiz)' };
   const expiryLine = expiresAt
     ? `<p>Ważny do: <strong>${new Date(expiresAt).toLocaleDateString('pl-PL')}</strong></p>`
-    : `<p>Ważność: <strong>bezterminowo</strong></p>`;
+    : '';
 
   return `<!DOCTYPE html><html lang="pl"><body style="font-family:sans-serif;max-width:560px;margin:0 auto;padding:24px;color:#1a2e28">
   <h1 style="color:#2D7A6B">Twój klucz dostępu do NarcFilter</h1>
@@ -38,9 +38,8 @@ function emailHtml(key, packageType, expiresAt) {
   ${expiryLine}
   <h2 style="color:#2D7A6B;font-size:1rem">Jak wpisać klucz?</h2>
   <ol style="line-height:1.8">
-    <li>Wejdź na <a href="https://narcfilter.vercel.app" style="color:#2D7A6B">narcfilter.vercel.app</a></li>
-    <li>Kliknij ikonę <strong>Ustawienia ⚙</strong> w prawym górnym rogu</li>
-    <li>Wklej klucz w pole „Klucz dostępu" i kliknij <strong>Zapisz ustawienia</strong></li>
+    <li>Wejdź na <a href="https://narcfilter.vercel.app" style="color:#2D7A6B">narcfilter.kompasrozwodowy.eu</a></li>
+    <li>Wpisz klucz w pole które pojawi się automatycznie i kliknij <strong>Zatwierdź</strong></li>
   </ol>
   <p style="margin-top:32px;font-size:0.85rem;color:#5a7a72">
     W razie pytań odpisz na tego maila.<br>
