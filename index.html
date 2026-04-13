@@ -305,7 +305,7 @@
   background: var(--surface2);
   border:1.5px solid var(--border);
   border-radius:var(--radius-sm); font-size:0.95rem;
-  resize:vertical; min-height:140px; line-height:1.65;
+  resize:none; min-height:140px; line-height:1.65; overflow-y:hidden;
   transition:border-color 0.2s, box-shadow 0.2s; outline:none;
 }
 .textarea:focus {
@@ -1828,6 +1828,10 @@ function setupEvents() {
   UI.$('btn-analyze').addEventListener('click', () => Analyzer.run());
   UI.$('msg-input').addEventListener('keydown', e => {
     if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) Analyzer.run();
+  });
+  UI.$('msg-input').addEventListener('input', function() {
+    this.style.height = 'auto';
+    this.style.height = Math.max(140, this.scrollHeight) + 'px';
   });
 
   // Log
