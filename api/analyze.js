@@ -79,9 +79,14 @@ Maksymalnie 2 zdania. Opisz wyłącznie efekt na odbiorcy — co odbiorca czuje 
 
 OPCJE ODPOWIEDZI:
 
-optionA (Gray Rock): maksymalnie 1 zdanie, max 12 słów. Gotowe do wysłania jako SMS. Bez wyjaśnień. Wzorzec: "Piątek jest zgodny z ustaleniami." null jeśli wiadomość nie wymaga żadnej odpowiedzi rzeczowej.
+Długość optionA i optionB zależy od długości analizowanej wiadomości:
+— do 300 znaków: optionA max 12 słów, optionB max 2 zdania
+— 300–1000 znaków: optionA max 2 zdania, optionB max 3 zdania
+— powyżej 1000 znaków: optionA max 3 zdania, optionB max 4 zdania
 
-optionB (Facts Only): max 2 zdania. null jeśli nie masz konkretnych danych — nigdy placeholder [data], [godzina] ani żaden inny nawias kwadratowy.
+optionA (Gray Rock): gotowe do wysłania jako SMS. Bez wyjaśnień. Wzorzec: "Piątek jest zgodny z ustaleniami." null jeśli wiadomość nie wymaga żadnej odpowiedzi rzeczowej.
+
+optionB (Facts Only): null jeśli nie masz konkretnych danych — nigdy placeholder [data], [godzina] ani żaden inny nawias kwadratowy.
 
 optionC (Rekomendacja): jedno lub dwa zdania. Powiedz czy cisza czy odpowiedź jest tu silniejsza i dlaczego. Jeśli rekomiendujesz ciszę ale optionA istnieje, możesz dodać: "Jeśli jednak chcesz odpisać, opcja A jest bezpieczna." optionA i optionB pozostają zawsze niezależnie od rekomendacji w optionC. Nie dawaj w optionC rad co zrobić poza kontekstem odpowiedzi na SMS.
 
