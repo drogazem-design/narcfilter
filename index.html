@@ -1722,11 +1722,26 @@ const Settings = {
     UI.setPanel('settings');
   },
 
-  save() {
+  async save() {
     const k = UI.$('api-key-input').value.trim().toUpperCase();
     S.accessKey = k; Store.set(SK.accessKey, k);
     this.refreshKeyState(); UI.toast(I18n.t('toast_settings'));
-    if (k) UI.setPanel('analyzer');
+    if (k) {
+      UI.setPanel('analyzer');
+      try {
+        const res = await fetch('/api/key-info', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ key: k }),
+        });
+        const data = await res.json();
+        if (data.valid) {
+          S.queriesRemaining = data.queriesRemaining;
+          Store.setJ('queriesRemaining', data.queriesRemaining);
+          Analyzer.updateQueriesCounter();
+        }
+      } catch {}
+    }
   },
 
   toggleKeyVisibility() {
