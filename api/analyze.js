@@ -134,7 +134,7 @@ export default async function handler(req, res) {
       : '\n\nRespond entirely in Polish.';
 
     const controller = new AbortController();
-    const timeoutId  = setTimeout(() => controller.abort(), 30_000);
+    const timeoutId  = setTimeout(() => controller.abort(), 55_000);
 
     let anthropicRes;
     try {
