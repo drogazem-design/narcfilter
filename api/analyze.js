@@ -174,7 +174,19 @@ export default async function handler(req, res) {
     const anthropicData = await anthropicRes.json();
     const rawText = anthropicData?.content?.[0]?.text ?? '';
 
-    return res.status(200).json({ result: rawText, queriesRemaining: keyResult.queriesRemaining });
+    // Strip markdown code fences if Claude wrapped the JSON
+    const cleaned = rawText.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
+
+    let parsed;
+    try {
+      parsed = JSON.parse(cleaned);
+    } catch {
+      console.error('JSON parse failed, rawText:', rawText.slice(0, 200));
+      await compensateKey(accessKey);
+      return res.status(502).json({ error: 'Nieprawidłowa odpowiedź AI. Spróbuj ponownie.' });
+    }
+
+    return res.status(200).json({ result: parsed, queriesRemaining: keyResult.queriesRemaining });
 
   } catch (err) {
     console.error('analyze handler error:', err);
