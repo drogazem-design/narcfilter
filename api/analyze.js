@@ -4,6 +4,24 @@
 
 import { verifyAndDecrementKey } from './_verifyKeyLogic.js';
 import { checkEnv } from './_checkEnv.js';
+import { redis, withTimeout } from './_redis.js';
+
+const LUA_COMPENSATE = `
+local raw = redis.call('GET', KEYS[1])
+if not raw then return 0 end
+local rec = cjson.decode(raw)
+rec.queriesRemaining = rec.queriesRemaining + 1
+redis.call('SET', KEYS[1], cjson.encode(rec))
+return rec.queriesRemaining
+`;
+
+async function compensateKey(key) {
+  try {
+    await withTimeout(redis.eval(LUA_COMPENSATE, [key], []), 5000, 'compensate key');
+  } catch (err) {
+    console.error('compensateKey failed (key not refunded):', err);
+  }
+}
 
 checkEnv('ANTHROPIC_API_KEY');
 
@@ -138,6 +156,7 @@ export default async function handler(req, res) {
     } catch (fetchErr) {
       clearTimeout(timeoutId);
       if (fetchErr.name === 'AbortError') {
+        await compensateKey(accessKey);
         return res.status(504).json({ error: 'Anthropic API timeout' });
       }
       throw fetchErr;
@@ -148,6 +167,7 @@ export default async function handler(req, res) {
       const errBody = await anthropicRes.json().catch(() => ({}));
       const errMsg  = errBody?.error?.message ?? `Anthropic API error ${anthropicRes.status}`;
       console.error('Anthropic error:', anthropicRes.status, errMsg);
+      await compensateKey(accessKey);
       return res.status(502).json({ error: errMsg });
     }
 
