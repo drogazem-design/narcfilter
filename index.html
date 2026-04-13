@@ -1271,7 +1271,11 @@ const Api = {
     }
 
     const data = await res.json();
-    return data.result;
+    try {
+      return typeof data.result === 'string' ? JSON.parse(data.result) : data.result;
+    } catch {
+      throw new Error('Błąd parsowania odpowiedzi serwera. Spróbuj ponownie.');
+    }
   },
 };
 
@@ -1292,6 +1296,7 @@ const Render = {
   },
 
   extractPatterns(md) {
+    if (md && typeof md === 'object') return Array.isArray(md.patterns) ? md.patterns : [];
     const pts = []; const lines = md.split('\n'); let active = false;
     for (const line of lines) {
       if (/^## (Analiza wzorców|Pattern Analysis)/i.test(line)) { active = true; continue; }
@@ -1303,6 +1308,43 @@ const Render = {
       }
     }
     return pts;
+  },
+
+  fromJSON(r) {
+    const isPl = S.lang === 'pl';
+    let html = '';
+    if (r.patterns?.length) {
+      html += `<h3 class="result-section">${isPl ? 'Analiza wzorców' : 'Pattern Analysis'}</h3>`;
+      html += `<p>${r.patterns.map(p => `<span class="ptag">${this.esc(p)}</span>`).join(' ')}</p>`;
+    }
+    if (r.intent) {
+      html += `<h3 class="result-section">${isPl ? 'Cel wiadomości' : 'Message intent'}</h3>`;
+      html += `<p>${this.esc(r.intent)}</p>`;
+    }
+    if (r.optionA) {
+      html += `<div class="option-block option-a"><p class="option-label">${this.esc(isPl ? 'Opcja A — Gray Rock' : 'Option A — Gray Rock')}</p><p>${this.esc(r.optionA)}</p></div>`;
+    }
+    if (r.optionB) {
+      html += `<div class="option-block option-b"><p class="option-label">${this.esc(isPl ? 'Opcja B — Tylko fakty' : 'Option B — Facts Only')}</p><p>${this.esc(r.optionB)}</p></div>`;
+    }
+    if (r.optionC) {
+      html += `<div class="option-block option-c"><p class="option-label">${this.esc(isPl ? 'Opcja C — Brak odpowiedzi' : 'Option C — No Response')}</p><p>${this.esc(r.optionC)}</p></div>`;
+    }
+    if (r.warmthNote) {
+      html += `<h3 class="result-section section-warm">${isPl ? 'Słowo dla ciebie' : 'A word for you'}</h3>`;
+      html += `<p>${this.esc(r.warmthNote)}</p>`;
+    }
+    return html;
+  },
+
+  result(content) {
+    if (!content) return '';
+    if (typeof content === 'object') return this.fromJSON(content);
+    try {
+      const parsed = JSON.parse(content);
+      if (parsed && typeof parsed === 'object') return this.fromJSON(parsed);
+    } catch {}
+    return this.markdown(content);
   },
 
   markdown(md) {
@@ -1387,7 +1429,7 @@ const Render = {
           <button class="btn-toggle btn-text" data-action="toggle"
                   data-id="${this.esc(e.id)}" data-open="0">${I18n.t('btn_show')}</button>
           <div class="entry-analysis hidden" id="ea-${this.esc(e.id)}">
-            ${this.markdown(e.fullAnalysis)}
+            ${this.result(e.fullAnalysis)}
           </div>
         </div>`;
     }).join('');
@@ -1436,7 +1478,7 @@ const Analyzer = {
 
   showResults(markdown) {
     const el = UI.$('results-content');
-    el.innerHTML = Render.markdown(markdown);
+    el.innerHTML = Render.result(markdown);
 
     el.querySelectorAll('h3, .option-block, p:not(.option-label), li').forEach((node, i) => {
       node.classList.add('reveal');
