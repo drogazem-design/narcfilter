@@ -1474,6 +1474,7 @@ const Analyzer = {
       S.queriesRemaining = queriesRemaining;
       this.updateQueriesCounter();
       this.showResults(result);
+      if (S.queriesRemaining === 0) this.showExhaustedError(false);
     } catch (err) {
       if (/^KEY_INVALID:Wyczerpano/i.test(err.message)) {
         this.showExhaustedError();
@@ -1512,13 +1513,13 @@ const Analyzer = {
     UI.$('error-area').scrollIntoView({ behavior:'smooth', block:'nearest' });
   },
 
-  showExhaustedError() {
+  showExhaustedError(hideResults = true) {
     const el = UI.$('error-msg');
     el.innerHTML = (S.lang === 'en')
       ? `Analysis limit exhausted. Buy more:&nbsp;<a href="https://buy.stripe.com/plink_1TK0NYDg3rjklSS3sYlIEbYR" target="_blank" rel="noopener">10 analyses</a>&nbsp;&middot;&nbsp;<a href="https://buy.stripe.com/plink_1TK0Q8Dg3rjklSS3qVOP0Iif" target="_blank" rel="noopener">100 analyses</a>&nbsp;&middot;&nbsp;<a href="https://buy.stripe.com/plink_1TK0QmDg3rjklSS3cpH6lEhl" target="_blank" rel="noopener">500 analyses</a><br><a href="https://www.kompasrozwodowy.eu" target="_blank" rel="noopener">more at kompasrozwodowy.eu</a>`
       : `Wyczerpano limit analiz. Dokup:&nbsp;<a href="https://buy.stripe.com/plink_1TK0NYDg3rjklSS3sYlIEbYR" target="_blank" rel="noopener">10 analiz</a>&nbsp;&middot;&nbsp;<a href="https://buy.stripe.com/plink_1TK0Q8Dg3rjklSS3qVOP0Iif" target="_blank" rel="noopener">100 analiz</a>&nbsp;&middot;&nbsp;<a href="https://buy.stripe.com/plink_1TK0QmDg3rjklSS3cpH6lEhl" target="_blank" rel="noopener">500 analiz</a><br><a href="https://www.kompasrozwodowy.eu" target="_blank" rel="noopener">więcej na kompasrozwodowy.eu</a>`;
     UI.$('error-area').classList.remove('hidden');
-    UI.$('results-area').classList.add('hidden');
+    if (hideResults) UI.$('results-area').classList.add('hidden');
     UI.$('error-area').scrollIntoView({ behavior:'smooth', block:'nearest' });
   },
 
@@ -1529,6 +1530,8 @@ const Analyzer = {
     if (n === 0) {
       el.textContent = I18n.t('queries_exhausted');
       el.className = 'queries-counter danger';
+      const btn = UI.$('btn-analyze');
+      if (btn) btn.disabled = true;
     } else {
       el.textContent = I18n.t('queries_remaining') + n;
       el.className = 'queries-counter' + (n <= 10 ? ' warn' : '');
