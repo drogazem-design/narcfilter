@@ -43,8 +43,15 @@ export default async function handler(req, res) {
     }
 
     const rateLimitKey = `rate:aktywacja:${email.toLowerCase()}`;
-    const count = await withTimeout(redis.incr(rateLimitKey), 5000, 'rate limit incr');
-    if (count === 1) await withTimeout(redis.expire(rateLimitKey, 3600), 5000, 'rate limit expire');
+    const RATE_LIMIT_SCRIPT = `
+local count = redis.call('INCR', KEYS[1])
+if count == 1 then redis.call('EXPIRE', KEYS[1], 3600) end
+return count
+`;
+    const count = await withTimeout(
+      redis.eval(RATE_LIMIT_SCRIPT, [rateLimitKey], []),
+      5000, 'rate limit'
+    );
     if (count > 3) return res.status(200).json({ success: true });
 
     const key = await withTimeout(redis.get(`email:${email.toLowerCase()}`), 5000, 'get key by email');

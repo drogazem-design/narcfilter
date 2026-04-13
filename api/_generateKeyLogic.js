@@ -92,12 +92,15 @@ export async function createAndDeliverKey({ packageType, customerEmail }) {
     5000, 'save key'
   );
 
-  await resend.emails.send({
-    from:    'kontakt@kompasrozwodowy.eu',
-    to:      customerEmail,
-    subject: 'Twój klucz dostępu do NarcFilter',
-    html:    emailHtml(key, packageType, expiresAt),
-  });
+  await withTimeout(
+    resend.emails.send({
+      from:    'kontakt@kompasrozwodowy.eu',
+      to:      customerEmail,
+      subject: 'Twój klucz dostępu do NarcFilter',
+      html:    emailHtml(key, packageType, expiresAt),
+    }),
+    10_000, 'resend email'
+  );
 
   return { key };
 }

@@ -167,7 +167,6 @@
         --teal-lt:   #3a9080;
         --teal-dim:  rgba(45,122,107,0.12);
         --teal-glow: rgba(45,122,107,0.28);
-
         /* Text */
         --text:      #dff0ec;
         --muted:     #5a8880;
@@ -875,9 +874,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 // CONSTANTS
 // ═══════════════════════════════════════════════════════════════════════════════
-const MODEL   = 'claude-sonnet-4-20250514';
-const API_URL = 'https://api.anthropic.com/v1/messages';
-const SK      = { key:'cps_api_key', lang:'cps_lang', log:'cps_log', theme:'cps_theme', accessKey:'nf_access_key' };
+const SK      = { lang:'cps_lang', log:'cps_log', theme:'cps_theme', accessKey:'nf_access_key' };
 
 const SUN_SVG = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`;
 const MOON_SVG = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`;
@@ -1011,7 +1008,7 @@ const TRANSLATIONS = {
     key_hint:'Klucz w formacie NF-XXXXX-XXXXX. Przechowywany wyłącznie na tym urządzeniu.',
     key_show:'Pokaż', key_hide:'Ukryj',
     btn_save_settings:'Zapisz ustawienia',
-    settings_note:'Klucz API uzyskasz na platform.anthropic.com. Każda analiza zużywa tokeny z Twojego konta Anthropic.',
+    settings_note:'Klucz dostępu otrzymujesz mailem po zakupie. Każdy klucz ma przypisaną liczbę analiz.',
     danger_zone_label:'Strefa danych',
     btn_clear_all:'Usuń wszystkie dane i klucz API',
     open_settings:'Otwórz ustawienia',
@@ -1051,7 +1048,7 @@ const TRANSLATIONS = {
     key_hint:'Key in NF-XXXXX-XXXXX format. Stored only on this device.',
     key_show:'Show', key_hide:'Hide',
     btn_save_settings:'Save settings',
-    settings_note:'Get your API key at platform.anthropic.com. Each analysis uses tokens from your account.',
+    settings_note:'You receive your access key by email after purchase. Each key has a set number of analyses.',
     danger_zone_label:'Data zone',
     btn_clear_all:'Remove all data & API key',
     open_settings:'Open settings',
@@ -1090,7 +1087,6 @@ const TRANSLATIONS = {
 // ═══════════════════════════════════════════════════════════════════════════════
 const S = {
   lang:       'pl',
-  apiKey:     '',
   accessKey:  '',
   log:        [],
   loading:    false,
@@ -1405,8 +1401,8 @@ const Analyzer = {
 
   async run() {
     const msg = UI.$('msg-input').value.trim();
-    if (!msg)      { this.showError(I18n.t('err_empty'));  return; }
-    if (!S.apiKey) { this.showError(I18n.t('err_no_key')); return; }
+    if (!msg)         { this.showError(I18n.t('err_empty'));  return; }
+    if (!S.accessKey) { this.showError(I18n.t('err_no_key')); return; }
 
     S.loading = true; S.lastResult = null; S.saved = false;
 
@@ -1728,7 +1724,6 @@ function applyTheme(t) {
 
 function init() {
   S.lang      = Store.get(SK.lang, 'pl');
-  S.apiKey    = Store.get(SK.key, '');
   S.accessKey = Store.get(SK.accessKey, '');
   S.log       = Store.getJ(SK.log, []);
 

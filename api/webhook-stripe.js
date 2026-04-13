@@ -85,10 +85,10 @@ export default async function handler(req, res) {
     console.log(`webhook-stripe: duplicate event ${session.id}, skipping`);
     return res.status(200).json({ received: true });
   }
-  await markSessionProcessed(session.id);
 
   try {
     await createAndDeliverKey({ packageType, customerEmail: email });
+    await markSessionProcessed(session.id);
     console.log(`webhook-stripe: key created (${packageType}), session ${session.id}`);
     return res.status(200).json({ received: true });
 
