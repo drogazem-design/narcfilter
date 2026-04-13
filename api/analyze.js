@@ -119,8 +119,8 @@ export default async function handler(req, res) {
     if (!message || typeof message !== 'string' || message.trim().length === 0) {
       return res.status(400).json({ error: 'Missing or empty message' });
     }
-    if (message.trim().length > 8000) {
-      return res.status(400).json({ error: 'Message too long (max 8000 characters)' });
+    if (message.trim().length > 2000) {
+      return res.status(400).json({ error: 'Message too long (max 2000 characters)' });
     }
 
     // Verify key and decrement usage

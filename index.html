@@ -782,7 +782,7 @@
       <div id="analyzer-input" class="card hidden">
         <label class="form-label" for="msg-input" data-i18n="input_label"></label>
         <textarea id="msg-input" class="textarea" rows="6" data-i18n-ph="input_ph"></textarea>
-        <p id="char-counter" class="char-counter">0 / 8000</p>
+        <p id="char-counter" class="char-counter">0 / 2000</p>
         <p class="kbd-hint" data-i18n="kbd_hint"></p>
         <button id="btn-analyze" class="btn btn-primary btn-full" data-i18n="btn_analyze"></button>
         <p id="queries-counter" class="queries-counter hidden"></p>
@@ -1842,9 +1842,9 @@ function setupEvents() {
     this.style.height = Math.max(140, this.scrollHeight) + 'px';
     const len = this.value.length;
     const counter = UI.$('char-counter');
-    counter.textContent = len + ' / 8000';
-    counter.className = 'char-counter' + (len > 8000 ? ' danger' : len > 7500 ? ' warn' : '');
-    UI.$('btn-analyze').disabled = len > 8000;
+    counter.textContent = len + ' / 2000';
+    counter.className = 'char-counter' + (len > 2000 ? ' danger' : len > 1700 ? ' warn' : '');
+    UI.$('btn-analyze').disabled = len > 2000;
   });
 
   // Log
