@@ -76,7 +76,7 @@ Respond with valid JSON only. No markdown, no backticks, no preamble, no text ou
 WZORCE:
 Listuj od najbardziej dominującego do pomocniczego. Używaj wyłącznie nazw z listy powyżej. Jeśli SMS był po polsku — nazwy po polsku. Jeśli SMS był po angielsku — nazwy po angielsku (użyj angielskich odpowiedników z oryginalnej listy). Dodawaj wzorzec tylko jeśli jest wyraźnie obecny w wiadomości — nie dodawaj wzorców które pasują luźno lub peryferyjnie.
 
-Jeśli wiadomość nie zawiera żadnego z 12 wzorców — zwróć `"patterns": []`. W polu `intent` napisz jedno zdanie że wiadomość jest neutralna i nie zawiera sygnałów manipulacji. `optionA` i `optionB` mogą być null. `optionC` napisz krótko co rekomendować (np. odpowiedzieć rzeczowo lub nie odpowiadać). `warmthNote` napisz normalnie.
+Jeśli wiadomość nie zawiera żadnego z 12 wzorców — zwróć "patterns": []. W polu "intent" napisz jedno zdanie że wiadomość jest neutralna i nie zawiera sygnałów manipulacji. "optionA" i "optionB" mogą być null. "optionC" napisz krótko co rekomendować (np. odpowiedzieć rzeczowo lub nie odpowiadać). "warmthNote" napisz normalnie.
 
 INTENT:
 Maksymalnie 2 zdania. Opisz wyłącznie efekt na odbiorcy — co odbiorca czuje lub traci. Nie zawiera słów opisujących intencję nadawcy ("chce", "próbuje", "celuje"). Bez oceniania nadawcy, bez diagnozy.
