@@ -314,6 +314,13 @@
   background: var(--surface-focus);
 }
 .textarea-sm { min-height:78px; }
+.char-counter {
+  text-align:right; font-size:0.78rem; color:var(--muted);
+  margin-top:4px!important; margin-bottom:0!important;
+  transition:color 0.2s;
+}
+.char-counter.warn  { color:#c49a2a; }
+.char-counter.danger { color:var(--err); font-weight:600; }
 .input-group { display:flex; gap:8px; }
 .input-group .input { flex:1; min-width:0; }
 .kbd-hint { font-size:0.74rem; color:var(--subtle); text-align:right; margin-top:7px; }
@@ -775,6 +782,7 @@
       <div id="analyzer-input" class="card hidden">
         <label class="form-label" for="msg-input" data-i18n="input_label"></label>
         <textarea id="msg-input" class="textarea" rows="6" data-i18n-ph="input_ph"></textarea>
+        <p id="char-counter" class="char-counter">0 / 8000</p>
         <p class="kbd-hint" data-i18n="kbd_hint"></p>
         <button id="btn-analyze" class="btn btn-primary btn-full" data-i18n="btn_analyze"></button>
         <p id="queries-counter" class="queries-counter hidden"></p>
@@ -1832,6 +1840,11 @@ function setupEvents() {
   UI.$('msg-input').addEventListener('input', function() {
     this.style.height = 'auto';
     this.style.height = Math.max(140, this.scrollHeight) + 'px';
+    const len = this.value.length;
+    const counter = UI.$('char-counter');
+    counter.textContent = len + ' / 8000';
+    counter.className = 'char-counter' + (len > 8000 ? ' danger' : len > 7500 ? ' warn' : '');
+    UI.$('btn-analyze').disabled = len > 8000;
   });
 
   // Log
