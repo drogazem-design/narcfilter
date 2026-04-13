@@ -62,6 +62,60 @@ export async function markSessionProcessed(sessionId) {
   await withTimeout(redis.set(`session:${sessionId}`, 1, { ex: 7 * 86_400 }), 5000, 'markSessionProcessed');
 }
 
+const LUA_TOP_UP = `
+local raw = redis.call('GET', KEYS[1])
+if not raw then return nil end
+local rec = cjson.decode(raw)
+rec.queriesRemaining = rec.queriesRemaining + tonumber(ARGV[1])
+redis.call('SET', KEYS[1], cjson.encode(rec))
+return rec.queriesRemaining
+`;
+
+function topUpEmailHtml(key, addedCount, newBalance) {
+  return `<!DOCTYPE html><html lang="pl"><body style="font-family:sans-serif;max-width:560px;margin:0 auto;padding:24px;color:#1a2e28">
+  <h1 style="color:#2D7A6B">Doładowano konto NarcFilter</h1>
+  <p>Dodaliśmy <strong>${addedCount} analiz</strong> do Twojego konta.</p>
+  <p>Nowe saldo: <strong>${newBalance} analiz</strong></p>
+  <div style="background:#F4EFE6;border:2px solid #2D7A6B;border-radius:10px;padding:18px 24px;text-align:center;margin:20px 0">
+    <span style="font-size:1.5rem;font-weight:700;letter-spacing:0.1em;color:#2D7A6B">${key}</span>
+  </div>
+  <p style="margin-top:32px;font-size:0.85rem;color:#5a7a72">
+    W razie pytań odpisz na tego maila.<br>
+    Zespół Kompas Rozwodowy
+  </p>
+</body></html>`;
+}
+
+/**
+ * Looks up an existing key by email and adds analyses to it.
+ * Returns { key, newBalance } on success, or null if no key found.
+ */
+export async function topUpKey({ queriesCount, customerEmail }) {
+  const existingKey = await withTimeout(
+    redis.get(`email:${customerEmail.toLowerCase()}`),
+    5000, 'topup get key'
+  );
+  if (!existingKey) return null;
+
+  const newBalance = await withTimeout(
+    redis.eval(LUA_TOP_UP, [existingKey], [String(queriesCount)]),
+    5000, 'topup lua'
+  );
+  if (newBalance === null) return null;
+
+  await withTimeout(
+    resend.emails.send({
+      from:    'kontakt@kompasrozwodowy.eu',
+      to:      customerEmail,
+      subject: 'Doładowano konto NarcFilter',
+      html:    topUpEmailHtml(existingKey, queriesCount, newBalance),
+    }),
+    10_000, 'topup email'
+  );
+
+  return { key: existingKey, newBalance };
+}
+
 /**
  * Generates a key, saves it to Redis, and sends an email.
  * @returns {Promise<{ key: string }>}

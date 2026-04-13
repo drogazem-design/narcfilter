@@ -4,7 +4,7 @@
 
 import Stripe from 'stripe';
 import { Resend } from 'resend';
-import { createAndDeliverKey, isSessionProcessed, markSessionProcessed } from './_generateKeyLogic.js';
+import { createAndDeliverKey, topUpKey, isSessionProcessed, markSessionProcessed, PACKAGES } from './_generateKeyLogic.js';
 import { checkEnv } from './_checkEnv.js';
 
 checkEnv('STRIPE_SECRET_KEY', 'STRIPE_WEBHOOK_SECRET', 'RESEND_API_KEY');
@@ -87,9 +87,16 @@ export default async function handler(req, res) {
   }
 
   try {
+    const queriesCount = PACKAGES[packageType].queriesRemaining;
+    const topped = await topUpKey({ queriesCount, customerEmail: email });
+    if (topped) {
+      await markSessionProcessed(session.id);
+      console.log(`webhook-stripe: key topped up +${queriesCount} (${packageType}), session ${session.id}`);
+      return res.status(200).json({ received: true });
+    }
     await createAndDeliverKey({ packageType, customerEmail: email });
     await markSessionProcessed(session.id);
-    console.log(`webhook-stripe: key created (${packageType}), session ${session.id}`);
+    console.log(`webhook-stripe: new key created (${packageType}), session ${session.id}`);
     return res.status(200).json({ received: true });
 
   } catch (err) {
