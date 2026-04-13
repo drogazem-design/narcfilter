@@ -86,7 +86,6 @@
       background-image:
       radial-gradient(ellipse 80% 50% at 8% 0%,   rgba(45,122,107,0.07) 0%, transparent 60%),
       radial-gradient(ellipse 60% 60% at 92% 100%, rgba(0,130,180,0.12) 0%, transparent 55%);
-      background-attachment: fixed;
       }
       button { font-family:inherit; cursor:pointer; border:none; background:none; }
       input, textarea { font-family:inherit; font-size:1rem; color:var(--text); }
@@ -113,12 +112,13 @@
       .brand { display:flex; align-items:center; gap:10px; text-decoration:none; }
       .brand-icon {
       flex-shrink:0; position:relative;
-      filter: drop-shadow(0 0 6px var(--teal-glow));
-      animation: shieldGlow 4s ease-in-out infinite;
+      will-change: filter;
+      filter: drop-shadow(0 0 4px rgba(45,122,107,0.22));
+      animation: shieldGlow 8s ease-in-out infinite;
       }
       @keyframes shieldGlow {
       0%,100% { filter:drop-shadow(0 0 4px rgba(45,122,107,0.22)); }
-      50%      { filter:drop-shadow(0 0 18px rgba(45,122,107,0.55)); }
+      50%      { filter:drop-shadow(0 0 10px rgba(45,122,107,0.40)); }
       }
       .brand-text { display:flex; flex-direction:column; gap:0; }
       .brand-name {
@@ -230,9 +230,7 @@
 
 /* ── TAB NAV ─────────────────────────────────────────────────────────────────── */
 .tab-nav {
-  background:rgba(12,24,33,0.9);
-  backdrop-filter:blur(20px) saturate(1.4);
-  -webkit-backdrop-filter:blur(20px) saturate(1.4);
+  background: var(--bg);
   border-bottom:1px solid var(--border);
   position:sticky; top:var(--header-h); z-index:99;
 }
@@ -260,8 +258,6 @@
 /* ── CARDS ───────────────────────────────────────────────────────────────────── */
 .card {
   background: var(--surface);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
   border-radius: var(--radius);
   border: 1px solid var(--border);
   padding: 22px;
@@ -345,13 +341,11 @@
   transform:translateY(-1px);
 }
 
-/* Secondary — glass */
+/* Secondary */
 .btn-secondary {
   background: var(--surface2);
   color:var(--text);
   border:1px solid var(--border);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
 }
 .btn-secondary:hover:not(:disabled) {
   border-color:var(--teal); color:var(--teal);
