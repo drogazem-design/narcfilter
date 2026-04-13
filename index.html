@@ -449,6 +449,19 @@
 .option-a .option-label { color:var(--opt-a-bd); }
 .option-b .option-label { color:var(--opt-b-bd); }
 .option-c .option-label { color:var(--opt-c-bd); }
+.option-disabled { opacity:0.45; filter:grayscale(0.4); }
+.option-disabled .option-na-text { font-style:italic; font-size:0.85rem!important; }
+.option-recommended { box-shadow:0 0 0 2px var(--teal); }
+.rec-badge {
+  display:inline-block; background:var(--teal); color:#fff;
+  font-size:0.68rem; font-weight:700; letter-spacing:0.05em;
+  padding:2px 8px; border-radius:20px; text-transform:uppercase;
+}
+.rec-reason {
+  margin-top:10px!important; padding-top:10px;
+  border-top:1px solid rgba(45,122,107,0.2);
+  font-size:0.85rem!important; color:var(--muted); font-style:italic;
+}
 
 /* ── WARM SUPPORT SECTION ────────────────────────────────────────────────────── */
 .section-warm {
@@ -621,7 +634,7 @@
 
 /* ── FOOTER ─────────────────────────────────────────────────────────────────── */
 .app-footer {
-  text-align:center; padding:16px 16px 32px;
+  text-align:center; padding:16px 16px 64px;
   color:var(--muted); font-size:0.78rem;
 }
 .footer-link {
@@ -1318,9 +1331,19 @@ const Render = {
     return pts;
   },
 
+  getRecommendedOption(optionC) {
+    if (!optionC) return 'c';
+    const start = optionC.slice(0, 80).toLowerCase();
+    if (/opcj[ae]\s+a\b/.test(start) || /option\s+a\b/.test(start)) return 'a';
+    if (/opcj[ae]\s+b\b/.test(start) || /option\s+b\b/.test(start)) return 'b';
+    return 'c';
+  },
+
   fromJSON(r) {
     const isPl = S.lang === 'pl';
+    const rec = this.getRecommendedOption(r.optionC);
     let html = '';
+
     if (r.patterns?.length) {
       html += `<h3 class="result-section">${isPl ? 'Analiza wzorców' : 'Pattern Analysis'}</h3>`;
       html += `<p>${r.patterns.map(p => `<span class="ptag">${this.esc(p)}</span>`).join(' ')}</p>`;
@@ -1329,15 +1352,44 @@ const Render = {
       html += `<h3 class="result-section">${isPl ? 'Cel wiadomości' : 'Message intent'}</h3>`;
       html += `<p>${this.esc(r.intent)}</p>`;
     }
+
+    // Option A
+    const recBadgeA = rec === 'a' ? `<span class="rec-badge">${isPl ? 'Rekomendowana' : 'Recommended'}</span>` : '';
     if (r.optionA) {
-      html += `<div class="option-block option-a"><p class="option-label">${this.esc(isPl ? 'Opcja A — Gray Rock' : 'Option A — Gray Rock')}</p><p>${this.esc(r.optionA)}</p></div>`;
+      html += `<div class="option-block option-a${rec === 'a' ? ' option-recommended' : ''}">`;
+      html += `<p class="option-label">${this.esc(isPl ? 'Opcja A — Gray Rock' : 'Option A — Gray Rock')} ${recBadgeA}</p>`;
+      html += `<p>${this.esc(r.optionA)}</p>`;
+      if (rec === 'a' && r.optionC) html += `<p class="rec-reason">${this.esc(r.optionC)}</p>`;
+      html += `</div>`;
+    } else {
+      html += `<div class="option-block option-a option-disabled">`;
+      html += `<p class="option-label">${this.esc(isPl ? 'Opcja A — Gray Rock' : 'Option A — Gray Rock')}</p>`;
+      html += `<p class="option-na-text">${this.esc(isPl ? 'Nie dotyczy — ta wiadomość nie wymaga rzeczowej odpowiedzi' : 'Not applicable — this message requires no substantive reply')}</p>`;
+      html += `</div>`;
     }
+
+    // Option B
+    const recBadgeB = rec === 'b' ? `<span class="rec-badge">${isPl ? 'Rekomendowana' : 'Recommended'}</span>` : '';
     if (r.optionB) {
-      html += `<div class="option-block option-b"><p class="option-label">${this.esc(isPl ? 'Opcja B — Tylko fakty' : 'Option B — Facts Only')}</p><p>${this.esc(r.optionB)}</p></div>`;
+      html += `<div class="option-block option-b${rec === 'b' ? ' option-recommended' : ''}">`;
+      html += `<p class="option-label">${this.esc(isPl ? 'Opcja B — Tylko fakty' : 'Option B — Facts Only')} ${recBadgeB}</p>`;
+      html += `<p>${this.esc(r.optionB)}</p>`;
+      if (rec === 'b' && r.optionC) html += `<p class="rec-reason">${this.esc(r.optionC)}</p>`;
+      html += `</div>`;
+    } else {
+      html += `<div class="option-block option-b option-disabled">`;
+      html += `<p class="option-label">${this.esc(isPl ? 'Opcja B — Tylko fakty' : 'Option B — Facts Only')}</p>`;
+      html += `<p class="option-na-text">${this.esc(isPl ? 'Nie dotyczy — brak konkretnych danych do przytoczenia' : 'Not applicable — no specific facts available to cite')}</p>`;
+      html += `</div>`;
     }
-    if (r.optionC) {
-      html += `<div class="option-block option-c"><p class="option-label">${this.esc(isPl ? 'Opcja C — Brak odpowiedzi' : 'Option C — No Response')}</p><p>${this.esc(r.optionC)}</p></div>`;
-    }
+
+    // Option C — silence / recommendation
+    const recBadgeC = rec === 'c' ? `<span class="rec-badge">${isPl ? 'Rekomendowana' : 'Recommended'}</span>` : '';
+    html += `<div class="option-block option-c${rec === 'c' ? ' option-recommended' : ''}">`;
+    html += `<p class="option-label">${this.esc(isPl ? 'Opcja C — Cisza' : 'Option C — Silence')} ${recBadgeC}</p>`;
+    if (r.optionC) html += `<p>${this.esc(r.optionC)}</p>`;
+    html += `</div>`;
+
     if (r.warmthNote) {
       html += `<h3 class="result-section section-warm">${isPl ? 'Słowo dla ciebie' : 'A word for you'}</h3>`;
       html += `<p>${this.esc(r.warmthNote)}</p>`;
@@ -1516,8 +1568,8 @@ const Analyzer = {
   showExhaustedError(hideResults = true) {
     const el = UI.$('error-msg');
     el.innerHTML = (S.lang === 'en')
-      ? `Analysis limit exhausted. Buy more:&nbsp;<a href="https://buy.stripe.com/plink_1TK0NYDg3rjklSS3sYlIEbYR" target="_blank" rel="noopener">10 analyses</a>&nbsp;&middot;&nbsp;<a href="https://buy.stripe.com/plink_1TK0Q8Dg3rjklSS3qVOP0Iif" target="_blank" rel="noopener">100 analyses</a>&nbsp;&middot;&nbsp;<a href="https://buy.stripe.com/plink_1TK0QmDg3rjklSS3cpH6lEhl" target="_blank" rel="noopener">500 analyses</a><br><a href="https://www.kompasrozwodowy.eu" target="_blank" rel="noopener">more at kompasrozwodowy.eu</a>`
-      : `Wyczerpano limit analiz. Dokup:&nbsp;<a href="https://buy.stripe.com/plink_1TK0NYDg3rjklSS3sYlIEbYR" target="_blank" rel="noopener">10 analiz</a>&nbsp;&middot;&nbsp;<a href="https://buy.stripe.com/plink_1TK0Q8Dg3rjklSS3qVOP0Iif" target="_blank" rel="noopener">100 analiz</a>&nbsp;&middot;&nbsp;<a href="https://buy.stripe.com/plink_1TK0QmDg3rjklSS3cpH6lEhl" target="_blank" rel="noopener">500 analiz</a><br><a href="https://www.kompasrozwodowy.eu" target="_blank" rel="noopener">więcej na kompasrozwodowy.eu</a>`;
+      ? `Analysis limit exhausted. Buy more:&nbsp;<a href="https://buy.stripe.com/plink_1TK0NYDg3rjklSS3sYlIEbYR" target="_blank" rel="noopener">10 analyses</a>&nbsp;&middot;&nbsp;<a href="https://buy.stripe.com/plink_1TK0Q8Dg3rjklSS3qVOP0Iif" target="_blank" rel="noopener">100 analyses</a>&nbsp;&middot;&nbsp;<a href="https://buy.stripe.com/plink_1TK0QmDg3rjklSS3cpH6lEhl" target="_blank" rel="noopener">500 analyses</a><br><a href="https://www.kompasrozwodowy.eu" target="_blank" rel="noopener">więcej materiałów na www.kompasrozwodowy.eu</a>`
+      : `Wyczerpano limit analiz. Dokup:&nbsp;<a href="https://buy.stripe.com/plink_1TK0NYDg3rjklSS3sYlIEbYR" target="_blank" rel="noopener">10 analiz</a>&nbsp;&middot;&nbsp;<a href="https://buy.stripe.com/plink_1TK0Q8Dg3rjklSS3qVOP0Iif" target="_blank" rel="noopener">100 analiz</a>&nbsp;&middot;&nbsp;<a href="https://buy.stripe.com/plink_1TK0QmDg3rjklSS3cpH6lEhl" target="_blank" rel="noopener">500 analiz</a><br><a href="https://www.kompasrozwodowy.eu" target="_blank" rel="noopener">więcej materiałów na www.kompasrozwodowy.eu</a>`;
     UI.$('error-area').classList.remove('hidden');
     if (hideResults) UI.$('results-area').classList.add('hidden');
     UI.$('error-area').scrollIntoView({ behavior:'smooth', block:'nearest' });
