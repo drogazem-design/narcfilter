@@ -317,6 +317,9 @@
 .input-group { display:flex; gap:8px; }
 .input-group .input { flex:1; min-width:0; }
 .kbd-hint { font-size:0.74rem; color:var(--subtle); text-align:right; margin-top:7px; }
+.queries-counter { font-size:0.78rem; color:var(--muted); text-align:right; margin-top:8px; }
+.queries-counter.warn { color:var(--warn-txt); }
+.queries-counter.danger { color:var(--err); }
 
 /* ── BUTTONS ─────────────────────────────────────────────────────────────────── */
 .btn {
@@ -761,6 +764,7 @@
         <textarea id="msg-input" class="textarea" rows="6" data-i18n-ph="input_ph"></textarea>
         <p class="kbd-hint" data-i18n="kbd_hint"></p>
         <button id="btn-analyze" class="btn btn-primary btn-full" data-i18n="btn_analyze"></button>
+        <p id="queries-counter" class="queries-counter hidden"></p>
       </div>
 
       <div id="error-area" class="hidden">
@@ -1017,6 +1021,7 @@ const TRANSLATIONS = {
     input_ph:'Wklej tutaj wiadomość, którą chcesz przeanalizować...',
     kbd_hint:'Ctrl+Enter aby analizować',
     btn_analyze:'Analizuj wiadomość', btn_analyzing:'Analizuję...',
+    queries_remaining:'Pozostało analiz: ', queries_exhausted:'Limit analiz wyczerpany',
     note_label:'Twoja notatka (opcjonalna)',
     note_ph:'Kontekst, jak się czułeś/aś, co chcesz zapamiętać...',
     btn_save:'Zapisz do dziennika', btn_saved:'Zapisano ✓',
@@ -1057,6 +1062,7 @@ const TRANSLATIONS = {
     input_ph:'Paste the message you want to analyze here...',
     kbd_hint:'Ctrl+Enter to analyze',
     btn_analyze:'Analyze message', btn_analyzing:'Analyzing...',
+    queries_remaining:'Analyses remaining: ', queries_exhausted:'Analysis limit exhausted',
     note_label:'Your note (optional)',
     note_ph:'Context, how you felt, what you want to remember...',
     btn_save:'Save to log', btn_saved:'Saved ✓',
@@ -1090,8 +1096,9 @@ const S = {
   accessKey:  '',
   log:        [],
   loading:    false,
-  lastResult: null,
-  saved:      false,
+  lastResult:        null,
+  saved:             false,
+  queriesRemaining:  null,
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -1272,7 +1279,8 @@ const Api = {
 
     const data = await res.json();
     try {
-      return typeof data.result === 'string' ? JSON.parse(data.result) : data.result;
+      const result = typeof data.result === 'string' ? JSON.parse(data.result) : data.result;
+      return { result, queriesRemaining: data.queriesRemaining ?? null };
     } catch {
       throw new Error('Błąd parsowania odpowiedzi serwera. Spróbuj ponownie.');
     }
@@ -1461,9 +1469,11 @@ const Analyzer = {
     UI.$('error-area').classList.add('hidden');
 
     try {
-      const markdown = await Api.call(msg);
-      S.lastResult = { markdown, message: msg, patterns: Render.extractPatterns(markdown) };
-      this.showResults(markdown);
+      const { result, queriesRemaining } = await Api.call(msg);
+      S.lastResult = { markdown: result, message: msg, patterns: Render.extractPatterns(result) };
+      S.queriesRemaining = queriesRemaining;
+      this.updateQueriesCounter();
+      this.showResults(result);
     } catch (err) {
       this.showError(this.classifyError(err.message));
     } finally {
@@ -1496,6 +1506,20 @@ const Analyzer = {
     UI.$('error-area').classList.remove('hidden');
     UI.$('results-area').classList.add('hidden');
     UI.$('error-area').scrollIntoView({ behavior:'smooth', block:'nearest' });
+  },
+
+  updateQueriesCounter() {
+    const el = UI.$('queries-counter');
+    if (!el || S.queriesRemaining === null) return;
+    const n = S.queriesRemaining;
+    if (n === 0) {
+      el.textContent = I18n.t('queries_exhausted');
+      el.className = 'queries-counter danger';
+    } else {
+      el.textContent = I18n.t('queries_remaining') + n;
+      el.className = 'queries-counter' + (n <= 10 ? ' warn' : '');
+    }
+    el.classList.remove('hidden');
   },
 
   resetSaveBtn() {

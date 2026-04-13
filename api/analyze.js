@@ -174,7 +174,7 @@ export default async function handler(req, res) {
     const anthropicData = await anthropicRes.json();
     const rawText = anthropicData?.content?.[0]?.text ?? '';
 
-    return res.status(200).json({ result: rawText });
+    return res.status(200).json({ result: rawText, queriesRemaining: keyResult.queriesRemaining });
 
   } catch (err) {
     console.error('analyze handler error:', err);
