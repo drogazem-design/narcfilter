@@ -133,7 +133,13 @@ export default async function handler(req, res) {
     }
 
     // Verify key and decrement usage
-    const keyResult = await verifyAndDecrementKey(accessKey);
+    let keyResult;
+    try {
+      keyResult = await verifyAndDecrementKey(accessKey);
+    } catch (redisErr) {
+      console.error('verifyAndDecrementKey failed:', redisErr);
+      return res.status(503).json({ error: 'Błąd połączenia z bazą danych. Spróbuj ponownie.' });
+    }
     if (!keyResult.valid) {
       return res.status(403).json({ error: 'Nieprawidłowy klucz', reason: keyResult.reason });
     }
@@ -174,10 +180,13 @@ export default async function handler(req, res) {
 
     if (!anthropicRes.ok) {
       const errBody = await anthropicRes.json().catch(() => ({}));
-      const errMsg  = errBody?.error?.message ?? `Anthropic API error ${anthropicRes.status}`;
+      const errMsg  = errBody?.error?.message ?? '';
       console.error('Anthropic error:', anthropicRes.status, errMsg);
       await compensateKey(accessKey);
-      return res.status(502).json({ error: errMsg });
+      if (anthropicRes.status === 529 || /overload/i.test(errMsg)) {
+        return res.status(503).json({ error: 'overloaded' });
+      }
+      return res.status(502).json({ error: errMsg || `Anthropic API error ${anthropicRes.status}` });
     }
 
     const anthropicData = await anthropicRes.json();
@@ -198,7 +207,7 @@ export default async function handler(req, res) {
     return res.status(200).json({ result: parsed, queriesRemaining: keyResult.queriesRemaining });
 
   } catch (err) {
-    console.error('analyze handler error:', err);
-    return res.status(500).json({ error: 'Internal server error' });
+    console.error('analyze handler error:', err?.message, err?.stack);
+    return res.status(500).json({ error: 'Internal server error', detail: err?.message });
   }
 }
