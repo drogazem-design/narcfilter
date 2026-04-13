@@ -61,9 +61,7 @@
       background: rgba(255,252,245,0.88);
       }
       [data-theme="light"] .brand-name {
-      background: linear-gradient(120deg, #2D7A6B 0%, #1f5a4e 55%, #154035 100%);
-      -webkit-background-clip: text;
-      background-clip: text;
+      color: var(--teal);
       }
       [data-theme="light"] .disclaimer-bar {
       background: rgba(244,239,230,0.96);
@@ -126,9 +124,8 @@
       .brand-name {
       font-family: 'DM Serif Display', Georgia, serif;
       font-size: 1.2rem; font-weight:400; letter-spacing:0.01em;
-      background: linear-gradient(120deg, #3a9080 0%, #2D7A6B 55%, #215a4e 100%);
-      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-      background-clip:text; line-height:1.2;
+      color: var(--teal-lt);
+      line-height:1.2;
       }
       .brand-tagline {
       font-size: 0.67rem; color: var(--muted); letter-spacing:0.08em;
@@ -437,7 +434,7 @@
 /* ── OPTION BLOCKS ───────────────────────────────────────────────────────────── */
 .option-block {
   border-radius:var(--radius-sm); padding:15px 18px;
-  margin:12px 0; border-left:3px solid transparent;
+  margin:12px 0; border:1px solid transparent;
   position:relative;
 }
 .option-block p { font-size:0.92rem!important; margin-bottom:5px!important; }
@@ -446,9 +443,9 @@
   margin-bottom:9px!important; letter-spacing:0.01em;
   display:flex; align-items:center; gap:8px;
 }
-.option-a { background:var(--opt-a-bg); border-left-color:var(--opt-a-bd); }
-.option-b { background:var(--opt-b-bg); border-left-color:var(--opt-b-bd); }
-.option-c { background:var(--opt-c-bg); border-left-color:var(--opt-c-bd); }
+.option-a { background:var(--opt-a-bg); border-color:var(--opt-a-bd); }
+.option-b { background:var(--opt-b-bg); border-color:var(--opt-b-bd); }
+.option-c { background:var(--opt-c-bg); border-color:var(--opt-c-bd); }
 .option-a .option-label { color:var(--opt-a-bd); }
 .option-b .option-label { color:var(--opt-b-bd); }
 .option-c .option-label { color:var(--opt-c-bd); }
@@ -473,10 +470,7 @@
 /* ── LOG ENTRIES ─────────────────────────────────────────────────────────────── */
 .log-entry {
   background: var(--surface);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
   border:1px solid var(--border);
-  border-left:3px solid var(--teal);
   border-radius:var(--radius);
   padding:18px 18px 14px;
   margin-bottom:12px;
@@ -485,8 +479,7 @@
   animation: fadeInUp 0.3s ease-out both;
 }
 .log-entry:hover {
-  border-color:var(--border-hi);
-  border-left-color:var(--teal);
+  border-color:rgba(45,122,107,0.3);
   background: rgba(22,44,64,0.9);
 }
 .entry-header {
