@@ -1532,6 +1532,7 @@ const Analyzer = {
       const { result, queriesRemaining } = await Api.call(msg);
       S.lastResult = { markdown: result, message: msg, patterns: Render.extractPatterns(result) };
       S.queriesRemaining = queriesRemaining;
+      Store.setJ('queriesRemaining', queriesRemaining);
       this.updateQueriesCounter();
       this.showResults(result);
       if (S.queriesRemaining === 0) this.showExhaustedError(false);
@@ -1876,9 +1877,10 @@ function applyTheme(t) {
 }
 
 function init() {
-  S.lang      = Store.get(SK.lang, 'pl');
-  S.accessKey = Store.get(SK.accessKey, '');
-  S.log       = Store.getJ(SK.log, []);
+  S.lang             = Store.get(SK.lang, 'pl');
+  S.accessKey        = Store.get(SK.accessKey, '');
+  S.log              = Store.getJ(SK.log, []);
+  S.queriesRemaining = Store.getJ('queriesRemaining', null);
 
   I18n.updateAll();
   Settings.refreshKeyState();
@@ -1889,6 +1891,8 @@ function init() {
   if (!S.accessKey) {
     UI.$('access-key-overlay').classList.remove('hidden');
   }
+
+  Analyzer.updateQueriesCounter();
 }
 
 init();
