@@ -79,6 +79,7 @@ function topUpEmailHtml(key, addedCount, newBalance) {
   <div style="background:#F4EFE6;border:2px solid #2D7A6B;border-radius:10px;padding:18px 24px;text-align:center;margin:20px 0">
     <span style="font-size:1.5rem;font-weight:700;letter-spacing:0.1em;color:#2D7A6B">${key}</span>
   </div>
+  <p>Twój klucz pozostaje bez zmian — <strong>nie musisz go wpisywać ponownie</strong>. Analizy zostały dodane automatycznie.</p>
   <p style="margin-top:32px;font-size:0.85rem;color:#5a7a72">
     W razie pytań odpisz na tego maila.<br>
     Zespół Kompas Rozwodowy
