@@ -78,10 +78,15 @@
       --opt-a-bg:  rgba(45,122,107,0.07);
       --opt-b-bg:  rgba(60,120,200,0.07);
       --opt-c-bg:  rgba(80,160,100,0.07);
-      --warn-bg:   rgba(45,122,107,0.08);
-      --warn-bd:   rgba(45,122,107,0.22);
-      --shadow:    0 8px 32px rgba(45,122,107,0.13);
-      --shadow-sm: 0 2px 10px rgba(45,122,107,0.09);
+      --warn-bg:      rgba(45,122,107,0.08);
+      --warn-bd:      rgba(45,122,107,0.22);
+      --shadow:       0 8px 32px rgba(45,122,107,0.13);
+      --shadow-sm:    0 2px 10px rgba(45,122,107,0.09);
+      /* a11y: light mode overrides for WCAG AA contrast */
+      --surface-focus: rgba(255,255,255,0.98);
+      --tag-color:    #8c2a10;
+      --warn-txt:     #1a5244;
+      --err:          #b03030;
       }
       [data-theme="light"] body {
       background-image:
@@ -104,6 +109,10 @@
       color: var(--muted);
       }
       [data-theme="light"] .option-desc { color: #5a7a72; }
+      /* a11y: option labels need darker text in light mode (default bd colors fail 4.5:1) */
+      [data-theme="light"] .option-a .option-label { color: #1a5c4c; }
+      [data-theme="light"] .option-b .option-label { color: #1a4a7a; }
+      [data-theme="light"] .option-c .option-label { color: #1a5c32; }
       [data-theme="light"] .tab-nav {
       background: rgba(237,230,218,0.8);
       border-bottom-color: rgba(45,122,107,0.13);
