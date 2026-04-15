@@ -19,7 +19,7 @@ function emailHtml(key) {
   </div>
   <h2 style="color:#2D7A6B;font-size:1rem">Jak wpisać klucz?</h2>
   <ol style="line-height:1.8">
-    <li>Wejdź na <a href="https://narcfilter.vercel.app" style="color:#2D7A6B">narcfilter.vercel.app</a></li>
+    <li>Wejdź na <a href="https://narcfilter.kompasrozwodowy.eu" style="color:#2D7A6B">narcfilter.kompasrozwodowy.eu</a></li>
     <li>Kliknij ikonę <strong>Ustawienia ⚙</strong> w prawym górnym rogu</li>
     <li>Wklej klucz w pole „Klucz dostępu" i kliknij <strong>Zapisz ustawienia</strong></li>
   </ol>

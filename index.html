@@ -1594,7 +1594,7 @@ const Analyzer = {
       S.loading = false;
       const ol2 = UI.$('loading-overlay');
       if (ol2) ol2.classList.add('hidden');
-      btn.disabled = false;
+      if (S.queriesRemaining !== 0) btn.disabled = false;
       btn.classList.remove('btn-analyzing');
       btn.textContent = I18n.t('btn_analyze');
     }
@@ -1625,8 +1625,8 @@ const Analyzer = {
   showExhaustedError(hideResults = true) {
     const el = UI.$('error-msg');
     el.innerHTML = (S.lang === 'en')
-      ? `Analysis limit exhausted. Buy more:&nbsp;<a href="https://buy.stripe.com/plink_1TK0NYDg3rjklSS3sYlIEbYR" target="_blank" rel="noopener">10 analyses</a>&nbsp;&middot;&nbsp;<a href="https://buy.stripe.com/plink_1TK0Q8Dg3rjklSS3qVOP0Iif" target="_blank" rel="noopener">100 analyses</a>&nbsp;&middot;&nbsp;<a href="https://buy.stripe.com/plink_1TK0QmDg3rjklSS3cpH6lEhl" target="_blank" rel="noopener">500 analyses</a><br><a href="https://www.kompasrozwodowy.eu" target="_blank" rel="noopener">więcej materiałów na www.kompasrozwodowy.eu</a>`
-      : `Wyczerpano limit analiz. Dokup:&nbsp;<a href="https://buy.stripe.com/plink_1TK0NYDg3rjklSS3sYlIEbYR" target="_blank" rel="noopener">10 analiz</a>&nbsp;&middot;&nbsp;<a href="https://buy.stripe.com/plink_1TK0Q8Dg3rjklSS3qVOP0Iif" target="_blank" rel="noopener">100 analiz</a>&nbsp;&middot;&nbsp;<a href="https://buy.stripe.com/plink_1TK0QmDg3rjklSS3cpH6lEhl" target="_blank" rel="noopener">500 analiz</a><br><a href="https://www.kompasrozwodowy.eu" target="_blank" rel="noopener">więcej materiałów na www.kompasrozwodowy.eu</a>`;
+      ? `Analysis limit exhausted. Buy more:&nbsp;<a href="https://buy.stripe.com/dRm7sLcOi7F11jV6K06Ri00" target="_blank" rel="noopener">10 analyses</a>&nbsp;&middot;&nbsp;<a href="https://buy.stripe.com/28EdR98y27F10fR2tK6Ri01" target="_blank" rel="noopener">100 analyses</a>&nbsp;&middot;&nbsp;<a href="https://buy.stripe.com/8x25kD8y27F1bYzb0g6Ri02" target="_blank" rel="noopener">500 analyses</a><br><a href="https://www.kompasrozwodowy.eu" target="_blank" rel="noopener">więcej materiałów na www.kompasrozwodowy.eu</a>`
+      : `Wyczerpano limit analiz. Dokup:&nbsp;<a href="https://buy.stripe.com/dRm7sLcOi7F11jV6K06Ri00" target="_blank" rel="noopener">10 analiz</a>&nbsp;&middot;&nbsp;<a href="https://buy.stripe.com/28EdR98y27F10fR2tK6Ri01" target="_blank" rel="noopener">100 analiz</a>&nbsp;&middot;&nbsp;<a href="https://buy.stripe.com/8x25kD8y27F1bYzb0g6Ri02" target="_blank" rel="noopener">500 analiz</a><br><a href="https://www.kompasrozwodowy.eu" target="_blank" rel="noopener">więcej materiałów na www.kompasrozwodowy.eu</a>`;
     UI.$('error-area').classList.remove('hidden');
     if (hideResults) UI.$('results-area').classList.add('hidden');
     UI.$('error-area').scrollIntoView({ behavior:'smooth', block:'nearest' });

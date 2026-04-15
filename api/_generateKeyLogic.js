@@ -38,7 +38,7 @@ function emailHtml(key, packageType, expiresAt) {
   ${expiryLine}
   <h2 style="color:#2D7A6B;font-size:1rem">Jak wpisać klucz?</h2>
   <ol style="line-height:1.8">
-    <li>Wejdź na <a href="https://narcfilter.vercel.app" style="color:#2D7A6B">narcfilter.kompasrozwodowy.eu</a></li>
+    <li>Wejdź na <a href="https://narcfilter.kompasrozwodowy.eu" style="color:#2D7A6B">narcfilter.kompasrozwodowy.eu</a></li>
     <li>Wpisz klucz w pole które pojawi się automatycznie i kliknij <strong>Zatwierdź</strong></li>
   </ol>
   <p style="margin-top:32px;font-size:0.85rem;color:#5a7a72">
