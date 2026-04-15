@@ -240,6 +240,20 @@
   text-align:center;
 }
 
+.pkg-link {
+  display:block; text-align:center; text-decoration:none;
+  padding:8px 12px; border-radius:8px; font-size:0.78rem;
+  background:var(--surface-2,rgba(255,255,255,0.07));
+  color:var(--muted); border:1px solid var(--border);
+  transition:background 0.15s, border-color 0.15s, color 0.15s;
+}
+.pkg-link:hover { background:rgba(255,255,255,0.13); color:var(--text); border-color:var(--muted); }
+.pkg-link.pkg-featured {
+  background:rgba(91,164,207,0.12); color:var(--text);
+  border-color:var(--accent,#5ba4cf); font-size:0.82rem; font-weight:500; padding:10px 12px;
+}
+.pkg-link.pkg-featured:hover { background:rgba(91,164,207,0.22); border-color:var(--accent,#5ba4cf); }
+
 /* ── TAB NAV ─────────────────────────────────────────────────────────────────── */
 .tab-nav {
   background: var(--bg);
@@ -883,9 +897,34 @@
            autocomplete="off" spellcheck="false"
            style="letter-spacing:0.07em;text-transform:uppercase;text-align:center;margin-bottom:12px" />
     <button id="btn-overlay-save" class="btn btn-primary btn-full">Zapisz klucz</button>
+    <p id="overlay-key-error" style="display:none;font-size:0.75rem;color:var(--err,#b03030);margin-top:8px;text-align:center;line-height:1.5">
+      Nieprawidłowy format. Sprawdź czy skopiowałaś/eś cały klucz z emaila.
+    </p>
     <p style="font-size:0.75rem;color:var(--muted);margin-top:18px;text-align:center;line-height:1.6">
       Klucz dostępu otrzymasz emailem po zakupie pakietu.<br>
       Możesz go też zmienić w zakładce Ustawienia.
+    </p>
+    <details style="margin-top:20px">
+      <summary style="cursor:pointer;font-size:0.78rem;color:var(--muted);text-align:center;list-style:none;-webkit-appearance:none;user-select:none;padding:4px 0">
+        Brak klucza? Kup pakiet
+      </summary>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:12px">
+        <a href="https://buy.stripe.com/dRm7sLcOi7F11jV6K06Ri00" target="_blank" rel="noopener" class="pkg-link">
+          10 analiz — Starter &nbsp;·&nbsp; <strong>9 zł</strong>
+        </a>
+        <a href="https://buy.stripe.com/28EdR98y27F10fR2tK6Ri01" target="_blank" rel="noopener" class="pkg-link">
+          100 analiz — Standard &nbsp;·&nbsp; <strong>29 zł</strong>
+        </a>
+        <a href="https://buy.stripe.com/8x25kD8y27F1bYzb0g6Ri02" target="_blank" rel="noopener" class="pkg-link pkg-featured">
+          500 analiz — Pro &nbsp;·&nbsp; 59 zł
+        </a>
+      </div>
+    </details>
+    <p style="margin-top:20px;font-size:0.75rem;text-align:center;line-height:1.6">
+      <a href="https://www.kompasrozwodowy.eu/" target="_blank" rel="noopener"
+         style="color:var(--teal-lt);text-decoration:none;font-weight:600">
+        www.kompasrozwodowy.eu
+      </a>
     </p>
   </div>
 </div>
@@ -1834,9 +1873,18 @@ function setupEvents() {
   UI.$('btn-overlay-save').addEventListener('click', () => {
     const k = UI.$('overlay-key-input').value.trim().toUpperCase();
     if (!k) return;
+    const errEl = UI.$('overlay-key-error');
+    if (!/^NF-[A-Z0-9]+-[A-Z0-9]+$/.test(k)) {
+      errEl.style.display = 'block';
+      return;
+    }
+    errEl.style.display = 'none';
     S.accessKey = k; Store.set(SK.accessKey, k);
     UI.$('access-key-overlay').classList.add('hidden');
     Settings.refreshKeyState();
+  });
+  UI.$('overlay-key-input').addEventListener('input', () => {
+    UI.$('overlay-key-error').style.display = 'none';
   });
   UI.$('overlay-key-input').addEventListener('keydown', e => {
     if (e.key === 'Enter') UI.$('btn-overlay-save').click();
