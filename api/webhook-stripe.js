@@ -38,9 +38,9 @@ async function getRawBody(req) {
 }
 
 const PAYMENT_LINK_MAP = {
-  'plink_1TK0NYDg3rjklSS3sYlIEbYR': 'starter',
-  'plink_1TK0Q8Dg3rjklSS3qVOP0Iif': 'standard',
-  'plink_1TK0QmDg3rjklSS3cpH6lEhl': 'pro',
+  'plink_1TT0JKDg3rjklSS3hFN4Bp7o': 'starter',
+  'plink_1TT0JUDg3rjklSS3Z5drAAz7': 'standard',
+  'plink_1TT0JWDg3rjklSS3ioLl2rU7': 'pro',
 };
 
 export default async function handler(req, res) {
