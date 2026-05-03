@@ -4,8 +4,9 @@
 
 import Stripe from 'stripe';
 import { Resend } from 'resend';
-import { createAndDeliverKey, topUpKey, isSessionProcessed, markSessionProcessed, PACKAGES } from './_generateKeyLogic.js';
+import { createAndDeliverKey, topUpKey, PACKAGES } from './_generateKeyLogic.js';
 import { checkEnv } from './_checkEnv.js';
+import { redis, withTimeout } from './_redis.js';
 
 checkEnv('STRIPE_SECRET_KEY', 'STRIPE_WEBHOOK_SECRET', 'RESEND_API_KEY');
 
@@ -72,16 +73,59 @@ export default async function handler(req, res) {
 
   if (!email) {
     console.error('webhook-stripe: no email in session', session.id);
+    try {
+      await resend.emails.send({
+        from:    'kontakt@kompasrozwodowy.eu',
+        to:      'kontakt@kompasrozwodowy.eu',
+        subject: '[NarcFilter] Brak emaila w sesji Stripe',
+        text: [
+          `Session ID: ${session.id}`,
+          `Payment Link: ${session.payment_link}`,
+          `Customer details: ${JSON.stringify(session.customer_details ?? {}, null, 2)}`,
+          '',
+          'Klient zapłacił, ale Stripe nie przekazał adresu email — manualny follow-up wymagany.',
+        ].join('\n'),
+      });
+    } catch (alertErr) {
+      console.error('webhook-stripe: failed to send no-email alert:', alertErr);
+    }
     return res.status(200).json({ received: true, warning: 'no email found' });
   }
 
   const packageType = PAYMENT_LINK_MAP[session.payment_link];
   if (!packageType) {
-    console.log(`webhook-stripe: ignoring payment_link ${session.payment_link}`);
-    return res.status(200).json({ received: true });
+    console.log(`webhook-stripe: unknown payment_link ${session.payment_link}`);
+    try {
+      await resend.emails.send({
+        from:    'kontakt@kompasrozwodowy.eu',
+        to:      'kontakt@kompasrozwodowy.eu',
+        subject: '[NarcFilter] Nieznany payment_link w webhooku Stripe',
+        text: [
+          `Session ID: ${session.id}`,
+          `Payment Link: ${session.payment_link}`,
+          `Email klienta: ${email}`,
+          '',
+          'Klient zapłacił, ale payment_link nie jest w PAYMENT_LINK_MAP.',
+          'Sprawdź czy to nowy pakiet (np. addon) — dodaj do mapy lub manualnie wystaw klucz.',
+        ].join('\n'),
+      });
+    } catch (alertErr) {
+      console.error('webhook-stripe: failed to send unknown-link alert:', alertErr);
+    }
+    return res.status(200).json({ received: true, warning: 'unknown payment_link' });
   }
 
-  if (await isSessionProcessed(session.id)) {
+  let reserved;
+  try {
+    reserved = await withTimeout(
+      redis.set(`session:${session.id}`, 1, { nx: true, ex: 30 * 86_400 }),
+      5000, 'reserve session'
+    );
+  } catch (redisErr) {
+    console.error('webhook-stripe: redis SET NX failed:', redisErr);
+    return res.status(500).json({ error: 'Storage unavailable, please retry' });
+  }
+  if (reserved !== 'OK') {
     console.log(`webhook-stripe: duplicate event ${session.id}, skipping`);
     return res.status(200).json({ received: true });
   }
@@ -90,22 +134,34 @@ export default async function handler(req, res) {
     const queriesCount = PACKAGES[packageType].queriesRemaining;
     const topped = await topUpKey({ queriesCount, customerEmail: email });
     if (topped) {
-      await markSessionProcessed(session.id);
       console.log(`webhook-stripe: key topped up +${queriesCount} (${packageType}), session ${session.id}`);
       return res.status(200).json({ received: true });
     }
     await createAndDeliverKey({ packageType, customerEmail: email });
-    await markSessionProcessed(session.id);
     console.log(`webhook-stripe: new key created (${packageType}), session ${session.id}`);
     return res.status(200).json({ received: true });
 
   } catch (err) {
-    console.error('webhook-stripe: createAndDeliverKey failed:', err);
+    console.error('webhook-stripe: delivery failed:', err?.message, err?.stack);
+
+    const msg = String(err?.message ?? '');
+    const isStorageError =
+      /timeout|Redis|ECONN|ENOTFOUND|fetch failed|UpstashError|save key|topup/i.test(msg);
+
+    if (isStorageError) {
+      try {
+        await withTimeout(redis.del(`session:${session.id}`), 3000, 'release session');
+      } catch (relErr) {
+        console.error('webhook-stripe: failed to release session reservation:', relErr);
+      }
+      return res.status(500).json({ error: 'Storage error, please retry' });
+    }
+
     try {
       await resend.emails.send({
         from:    'kontakt@kompasrozwodowy.eu',
         to:      'kontakt@kompasrozwodowy.eu',
-        subject: '[NarcFilter] Błąd dostawy klucza',
+        subject: '[NarcFilter ALERT] Błąd dostawy klucza — wymagany manualny follow-up',
         text: [
           `Email klienta: ${email}`,
           `Session ID: ${session.id}`,
@@ -116,7 +172,6 @@ export default async function handler(req, res) {
     } catch (alertErr) {
       console.error('webhook-stripe: failed to send alert email:', alertErr);
     }
-    // Return 200 to prevent Stripe from retrying.
-    return res.status(200).json({ received: true, error: 'Delivery failed' });
+    return res.status(200).json({ received: true, error: 'Delivery failed (manual follow-up needed)' });
   }
 }

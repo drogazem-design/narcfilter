@@ -30,7 +30,7 @@
         /* Text */
         --text:      #dff0ec;
         --muted:       #7aada5;
-        --surface-focus: rgba(22,50,70,0.9);
+        --surface-focus: rgba(22,50,70,0.9);
       --subtle:    #294540;
       
               /* Pattern tags — warm coral */
@@ -106,7 +106,7 @@
       [data-theme="light"] .disclaimer-bar {
       background: rgba(244,239,230,0.96);
       border-top-color: rgba(45,122,107,0.18);
-      color: var(--muted);
+      color: #3a4a44;
       }
       [data-theme="light"] .option-desc { color: #5a7a72; }
       /* a11y: option labels need darker text in light mode (default bd colors fail 4.5:1) */
@@ -624,9 +624,9 @@
 /* ── DISCLAIMER BAR ──────────────────────────────────────────────────────────── */
 .disclaimer-bar {
   position:fixed; bottom:0; left:0; right:0; z-index:800;
-  text-align:center; padding:7px 20px;
-  font-size:11px; line-height:1.5;
-  color:rgba(255,255,255,0.62);
+  text-align:center; padding:9px 20px;
+  font-size:14px; line-height:1.5; font-weight:500;
+  color:rgba(255,255,255,0.92);
   background:rgba(12,24,33,0.92);
   backdrop-filter:blur(6px);
   border-top:1px solid rgba(255,255,255,0.06);
@@ -904,6 +904,20 @@
       Klucz dostępu otrzymasz emailem po zakupie pakietu.<br>
       Możesz go też zmienić w zakładce Ustawienia.
     </p>
+    <p id="overlay-legal-note-pl" style="font-size:0.72rem;color:var(--muted);margin-top:14px;text-align:center;line-height:1.55">
+      Wprowadzając klucz akceptujesz
+      <a href="#" onclick="Legal.open('terms');return false;" style="color:var(--teal-lt);text-decoration:underline">Regulamin</a>
+      i
+      <a href="#" onclick="Legal.open('privacy');return false;" style="color:var(--teal-lt);text-decoration:underline">Politykę Prywatności</a>.
+      Treść analizowanych wiadomości jest przesyłana do Anthropic Inc. (USA) wyłącznie na potrzeby analizy.
+    </p>
+    <p id="overlay-legal-note-en" style="display:none;font-size:0.72rem;color:var(--muted);margin-top:14px;text-align:center;line-height:1.55">
+      By entering your key you accept the
+      <a href="#" onclick="Legal.open('terms');return false;" style="color:var(--teal-lt);text-decoration:underline">Terms of Service</a>
+      and
+      <a href="#" onclick="Legal.open('privacy');return false;" style="color:var(--teal-lt);text-decoration:underline">Privacy Policy</a>.
+      Analyzed message content is sent to Anthropic Inc. (USA) solely for analysis.
+    </p>
     <details style="margin-top:20px">
       <summary style="cursor:pointer;font-size:0.78rem;color:var(--muted);text-align:center;list-style:none;-webkit-appearance:none;user-select:none;padding:4px 0">
         Brak klucza? Kup pakiet
@@ -1083,7 +1097,7 @@ const TRANSLATIONS = {
     btn_save_settings:'Zapisz ustawienia',
     settings_note:'Klucz dostępu otrzymujesz mailem po zakupie. Każdy klucz ma przypisaną liczbę analiz.',
     danger_zone_label:'Strefa danych',
-    btn_clear_all:'Usuń wszystkie dane i klucz API',
+    btn_clear_all:'Usuń wszystkie dane i klucz dostępu',
     open_settings:'Otwórz ustawienia',
     no_key_msg:'Aby korzystać z aplikacji, wprowadź klucz dostępu NarcFilter w ustawieniach.',
     input_label:'Wiadomość do analizy',
@@ -1111,7 +1125,7 @@ const TRANSLATIONS = {
     confirm_clear:'Wyczyścić cały dziennik? Tej operacji nie można cofnąć.',
     confirm_clear_all:'Usunąć wszystkie dane? Klucz API i cały dziennik zostaną usunięte. Tej operacji nie można cofnąć.',
     footer_privacy:'Polityka prywatności', footer_terms:'Regulamin',
-    disclaimer:'Analizy generowane przez AI mogą zawierać błędy i mają charakter wyłącznie informacyjny. Nie zastępują porady prawnej, psychologicznej ani innej profesjonalnej rekomendacji. To Ty podejmujesz ostateczną decyzję co do swoich działań.',
+    disclaimer:'Analizy generowane przez AI mogą zawierać błędy i mają charakter wyłącznie informacyjny i psychoedukacyjny. Nie zastępują porady prawnej, psychologicznej ani innej profesjonalnej rekomendacji. To Ty podejmujesz ostateczną decyzję co do swoich działań.',
     btn_close:'Zamknij',
   },
   en: {
@@ -1124,9 +1138,9 @@ const TRANSLATIONS = {
     btn_save_settings:'Save settings',
     settings_note:'You receive your access key by email after purchase. Each key has a set number of analyses.',
     danger_zone_label:'Data zone',
-    btn_clear_all:'Remove all data & API key',
+    btn_clear_all:'Remove all data & access key',
     open_settings:'Open settings',
-    no_key_msg:'To use the app, add your Anthropic API key in settings.',
+    no_key_msg:'To use the app, add your NarcFilter access key in settings.',
     input_label:'Message to analyze',
     input_ph:'Paste the message you want to analyze here...',
     kbd_hint:'Ctrl+Enter to analyze',
@@ -1144,15 +1158,15 @@ const TRANSLATIONS = {
     toast_cleared:'Log cleared', toast_copied:'Copied!',
     toast_settings:'Settings saved', toast_cleared_all:'All data removed',
     err_empty:'Please enter or paste a message to analyze.',
-    err_no_key:'No API key. Add it in settings.',
-    err_invalid_key:'Invalid API key. Check settings.',
+    err_no_key:'No access key. Add it in settings.',
+    err_invalid_key:'Invalid access key. Check settings.',
     err_network:'No internet connection.',
     err_rate:'Rate limit exceeded. Please wait.',
     err_api:'API server error. Please try again.',
     confirm_clear:'Clear the entire log? This cannot be undone.',
-    confirm_clear_all:'Delete all data? API key and entire log will be removed. This cannot be undone.',
+    confirm_clear_all:'Delete all data? Access key and entire log will be removed. This cannot be undone.',
     footer_privacy:'Privacy Policy', footer_terms:'Terms',
-    disclaimer:'AI-generated analyses may contain errors and are for informational purposes only. They do not replace legal, psychological, or other professional advice. You make the final decision about your actions.',
+    disclaimer:'AI-generated analyses may contain errors and are for informational and psychoeducational purposes only. They do not replace legal, psychological, or other professional advice. You make the final decision about your actions.',
     btn_close:'Close',
   }
 };
@@ -1210,6 +1224,12 @@ const I18n = {
     document.getElementById('btn-pl').classList.toggle('active', S.lang === 'pl');
     document.getElementById('btn-en').classList.toggle('active', S.lang === 'en');
     document.documentElement.lang = S.lang;
+      const noteP = document.getElementById('overlay-legal-note-pl');
+      const noteE = document.getElementById('overlay-legal-note-en');
+      if (noteP && noteE) {
+        noteP.style.display = S.lang === 'pl' ? '' : 'none';
+        noteE.style.display = S.lang === 'en' ? '' : 'none';
+      }
   },
 };
 
@@ -1227,13 +1247,15 @@ const Legal = {
         ['section',  '2. Jakie dane przetwarzamy'],
         ['p',        'Gdy wklejasz wiadomość do analizy, jej treść jest wysyłana do API firmy Anthropic (USA) wyłącznie w celu przeprowadzenia analizy. Nie przechowujemy tej treści na własnych serwerach.'],
         ['p',        'Log incydentów jest przechowywany wyłącznie lokalnie w Twojej przeglądarce (localStorage). Nie mamy do niego dostępu.'],
-        ['p',        'Nie zbieramy adresów email, imion, danych logowania ani żadnych innych danych osobowych.'],
-        ['section',  '3. Anthropic API'],
-        ['p',        'Treść wiadomości trafia do Anthropic Inc. zgodnie z ich polityką prywatności: anthropic.com/privacy. Anthropic może przechowywać zapytania przez ograniczony czas zgodnie ze swoją polityką.'],
+        ['p',        'Zbieramy adres email wyłącznie w celu dostarczenia klucza dostępu i obsługi posprzedażowej (np. ponowne wysłanie klucza, doładowanie pakietu). Nie zbieramy imion, danych logowania ani innych danych osobowych poza adresem email.'],
+        ['section',  '3. Podprzetwarzający (Anthropic, Resend, Upstash)'],
+        ['p',        'Treść wiadomości trafia do Anthropic Inc. (USA) zgodnie z ich polityką prywatności: anthropic.com/privacy. Anthropic może przechowywać zapytania przez ograniczony czas zgodnie ze swoją polityką.'],
+        ['p',        'Twój adres email jest przekazywany do Resend Inc. (USA) — usługa wysyłki maila z kluczem dostępu — oraz do Upstash, Inc. — magazyn klucza dostępu i powiązanego adresu email.'],
         ['section',  '4. Pliki cookie'],
         ['p',        'Aplikacja nie używa plików cookie. Dane są przechowywane wyłącznie w localStorage Twojej przeglądarki.'],
         ['section',  '5. Twoje prawa (RODO)'],
-        ['p',        'Masz prawo do dostępu, sprostowania i usunięcia danych. Ponieważ nie przechowujemy Twoich danych, możesz je usunąć samodzielnie przez funkcję "Usuń wszystkie dane lokalne" w Ustawieniach aplikacji. W sprawach dotyczących danych osobowych możesz kontaktować się pod adresem: integralmindset@gmail.com'],
+        ['p',        'Masz prawo do dostępu, sprostowania i usunięcia danych. Dane lokalne (log incydentów, klucz w przeglądarce) możesz usunąć samodzielnie przez funkcję "Usuń wszystkie dane i klucz dostępu" w Ustawieniach aplikacji.'],
+        ['p',        'Aby usunąć Twój klucz dostępu i powiązane dane (adres email) z naszych systemów, wyślij maila na kontakt@kompasrozwodowy.eu — usuniemy w ciągu 30 dni. W sprawach dotyczących danych osobowych możesz też kontaktować się pod adresem: integralmindset@gmail.com'],
         ['section',  '6. Zmiany polityki'],
         ['p',        'O istotnych zmianach poinformujemy na stronie kompasrozwodowy.eu.'],
       ],
@@ -1241,7 +1263,7 @@ const Legal = {
         ['title',    'Regulamin'],
         ['subtitle', 'NarcFilter — Moduł Kompas Rozwodowy · Ostatnia aktualizacja: kwiecień 2026'],
         ['section',  '1. Charakter narzędzia'],
-        ['p',        'NarcFilter jest narzędziem psychoedukacyjnym. Nie jest formą terapii, poradnictwa psychologicznego ani pomocy prawnej. Analizy generowane przez AI mają charakter informacyjny i nie stanowią diagnozy.'],
+        ['p',        'NarcFilter jest narzędziem informacyjnym i psychoedukacyjnym. Nie jest formą terapii, poradnictwa psychologicznego ani pomocy prawnej. Analizy generowane przez AI mają charakter informacyjny i psychoedukacyjny i nie stanowią diagnozy.'],
         ['section',  '2. Użytkownik'],
         ['p',        'Z narzędzia mogą korzystać osoby pełnoletnie (18+). Korzystając z NarcFilter akceptujesz niniejszy regulamin.'],
         ['section',  '3. Ograniczenie odpowiedzialności'],
@@ -1250,9 +1272,11 @@ const Legal = {
         ['p',        'Integral Mindset Institute sp. z o.o. nie ponosi odpowiedzialności za utracone korzyści ani szkody pośrednie wynikające z korzystania z narzędzia.'],
         ['section',  '4. Własność intelektualna'],
         ['p',        'Nazwa NarcFilter, interfejs i system promptów są własnością Integral Mindset Institute sp. z o.o. Kopiowanie i reprodukowanie bez zgody jest zabronione.'],
-        ['section',  '5. Zmiany regulaminu'],
+        ['section',  '5. Zakup pakietu i prawo odstąpienia'],
+        ['p',        'Pakiet analiz jest treścią cyfrową dostarczaną natychmiast po zaksięgowaniu płatności (klucz dostępu wysyłany emailem). Klikając "Kupuję i płacę", wyrażasz zgodę na natychmiastowe rozpoczęcie świadczenia i przyjmujesz do wiadomości, że tracisz prawo do odstąpienia od umowy zgodnie z art. 38 pkt 13 ustawy o prawach konsumenta.'],
+        ['section',  '6. Zmiany regulaminu'],
         ['p',        'Zastrzegamy prawo do zmiany regulaminu. Aktualna wersja zawsze dostępna jest na stronie aplikacji.'],
-        ['section',  '6. Kontakt'],
+        ['section',  '7. Kontakt'],
         ['p',        'Integral Mindset Institute sp. z o.o.'],
         ['p',        'al. Niepodległości 4/78, 05-800 Pruszków'],
         ['p',        'NIP: 5342613837 · KRS: 0000820154'],
@@ -1268,13 +1292,15 @@ const Legal = {
         ['section',  '2. What data we process'],
         ['p',        'When you paste a message for analysis, its content is sent to Anthropic\'s API (USA) solely to perform the analysis. We do not store this content on our own servers.'],
         ['p',        'Your incident log is stored locally in your browser (localStorage) only. We have no access to it.'],
-        ['p',        'We do not collect email addresses, names, login credentials, or any other personal data.'],
-        ['section',  '3. Anthropic API'],
-        ['p',        'Message content is processed by Anthropic Inc. under their privacy policy: anthropic.com/privacy. Anthropic may retain queries for a limited period per their policy.'],
+        ['p',        'We collect your email address solely to deliver your access key and to handle post-purchase support (e.g. resending the key, topping up your package). We do not collect names, login credentials, or any other personal data beyond the email address.'],
+        ['section',  '3. Sub-processors (Anthropic, Resend, Upstash)'],
+        ['p',        'Message content is processed by Anthropic Inc. (USA) under their privacy policy: anthropic.com/privacy. Anthropic may retain queries for a limited period per their policy.'],
+        ['p',        'Your email address is shared with Resend Inc. (USA) — used to deliver the access key email — and Upstash, Inc. — used to store the access key and associated email address.'],
         ['section',  '4. Cookies'],
         ['p',        'This application does not use cookies. Data is stored solely in your browser\'s localStorage.'],
         ['section',  '5. Your rights (GDPR)'],
-        ['p',        'You have the right to access, correct, and delete your data. Since we do not store your data, you can delete it yourself using "Delete all local data" in the app Settings. For data-related inquiries contact: integralmindset@gmail.com'],
+        ['p',        'You have the right to access, correct, and delete your data. Local data (incident log, key stored in your browser) can be deleted via "Remove all data & access key" in the app Settings.'],
+        ['p',        'To delete your access key and associated data (email address) from our systems, email kontakt@kompasrozwodowy.eu — we will remove the data within 30 days. For other data-related inquiries contact: integralmindset@gmail.com'],
         ['section',  '6. Policy changes'],
         ['p',        'Material changes will be announced at kompasrozwodowy.eu.'],
       ],
@@ -1282,7 +1308,7 @@ const Legal = {
         ['title',    'Terms of Service'],
         ['subtitle', 'NarcFilter — Kompas Rozwodowy Module · Last updated: April 2026'],
         ['section',  '1. Nature of the tool'],
-        ['p',        'NarcFilter is a psychoeducational tool. It is not a form of therapy, psychological counseling, or legal advice. AI-generated analyses are informational and do not constitute a diagnosis.'],
+        ['p',        'NarcFilter is an informational and psychoeducational tool. It is not a form of therapy, psychological counseling, or legal advice. AI-generated analyses are informational and psychoeducational in nature and do not constitute a diagnosis.'],
         ['section',  '2. Users'],
         ['p',        'This tool is intended for adults (18+). By using NarcFilter you accept these Terms of Service.'],
         ['section',  '3. Limitation of liability'],
@@ -1291,9 +1317,11 @@ const Legal = {
         ['p',        'Integral Mindset Institute sp. z o.o. shall not be liable for lost profits or indirect damages arising from use of the tool.'],
         ['section',  '4. Intellectual property'],
         ['p',        'The name NarcFilter, interface, and prompt system are the property of Integral Mindset Institute sp. z o.o. Copying or reproduction without permission is prohibited.'],
-        ['section',  '5. Changes'],
+        ['section',  '5. Purchase and right of withdrawal'],
+        ['p',        'The analysis package is digital content delivered immediately after payment is confirmed (the access key is sent by email). By clicking "Buy and pay", you consent to the immediate start of performance and acknowledge that you lose your right of withdrawal pursuant to art. 38 point 13 of the Polish Consumer Rights Act (transposing EU Directive 2011/83/EU as amended by the Omnibus Directive).'],
+        ['section',  '6. Changes'],
         ['p',        'We reserve the right to modify these terms. The current version is always available in the application.'],
-        ['section',  '6. Contact'],
+        ['section',  '7. Contact'],
         ['p',        'Integral Mindset Institute sp. z o.o.'],
         ['p',        'al. Niepodległości 4/78, 05-800 Pruszków, Poland'],
         ['p',        'NIP: 5342613837 · KRS: 0000820154'],

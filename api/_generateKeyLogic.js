@@ -71,6 +71,12 @@ redis.call('SET', KEYS[1], cjson.encode(rec))
 return rec.queriesRemaining
 `;
 
+const LUA_SAVE_KEY = `
+redis.call('SET', KEYS[1], ARGV[1])
+redis.call('SET', KEYS[2], ARGV[2])
+return 1
+`;
+
 function topUpEmailHtml(key, addedCount, newBalance) {
   return `<!DOCTYPE html><html lang="pl"><body style="font-family:sans-serif;max-width:560px;margin:0 auto;padding:24px;color:#1a2e28">
   <h1 style="color:#2D7A6B">Doładowano konto NarcFilter</h1>
@@ -138,11 +144,11 @@ export async function createAndDeliverKey({ packageType, customerEmail }) {
   };
 
   await withTimeout(
-    redis.pipeline()
-      .set(key, record)
-      // Reverse index: allows looking up key by email (used by /api/aktywacja-check)
-      .set(`email:${customerEmail.toLowerCase()}`, key)
-      .exec(),
+    redis.eval(
+      LUA_SAVE_KEY,
+      [key, `email:${customerEmail.toLowerCase()}`],
+      [JSON.stringify(record), key]
+    ),
     5000, 'save key'
   );
 

@@ -19,3 +19,16 @@ export function withTimeout(promise, ms = 5000, label = 'Redis') {
     ),
   ]);
 }
+
+const LUA_INCR_WITH_EXPIRY = `
+local count = redis.call('INCR', KEYS[1])
+if count == 1 then redis.call('EXPIRE', KEYS[1], tonumber(ARGV[1])) end
+return count
+`;
+
+export async function incrWithExpiry(key, ttlSec, label = 'rate limit') {
+  return withTimeout(
+    redis.eval(LUA_INCR_WITH_EXPIRY, [key], [String(ttlSec)]),
+    5000, label
+  );
+}

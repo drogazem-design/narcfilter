@@ -26,3 +26,6 @@ dist-ssr
 *.sln
 *.sw?
 .vercel
+
+# Local-only legacy file (keep on disk, don't ship)
+narcfilter.html

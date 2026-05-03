@@ -23,6 +23,23 @@ async function compensateKey(key) {
   }
 }
 
+const LUA_RATE_LIMIT = `
+local count = redis.call('INCR', KEYS[1])
+if count == 1 then redis.call('EXPIRE', KEYS[1], 60) end
+return count
+`;
+
+const RATE_LIMIT_MAX = 15;
+const RATE_LIMIT_WINDOW_SEC = 60;
+
+async function checkRateLimit(accessKey) {
+  const count = await withTimeout(
+    redis.eval(LUA_RATE_LIMIT, [`rate:analyze:${accessKey}`], []),
+    5000, 'analyze rate limit'
+  );
+  return count <= RATE_LIMIT_MAX;
+}
+
 checkEnv('ANTHROPIC_API_KEY');
 
 const SYSTEM_PROMPT = `Rola AI: asystent analizy komunikacji dla osób w kontakcie z kimś o wzorcach narcystycznych. Nie terapeuta, nie prawnik.
@@ -124,6 +141,25 @@ export default async function handler(req, res) {
       return res.status(403).json({ error: 'Nieprawidłowy klucz', reason: 'Nieprawidłowy format klucza' });
     }
 
+    try {
+      const allowed = await checkRateLimit(accessKey);
+      if (!allowed) {
+        return res.status(429).json({
+          error: lang === 'en'
+            ? 'Slow down! Wait a minute — your analyses were not used up.'
+            : 'Za szybko! Odczekaj minutę — Twoje analizy nie zostały zużyte.',
+          retryAfter: RATE_LIMIT_WINDOW_SEC,
+        });
+      }
+    } catch (rateLimitErr) {
+      console.error('checkRateLimit failed (failing closed):', rateLimitErr);
+      return res.status(503).json({
+        error: lang === 'en'
+          ? 'Temporary issue, please try again shortly.'
+          : 'Chwilowy problem techniczny, spróbuj za chwilę.',
+      });
+    }
+
     // Validate message
     if (!message || typeof message !== 'string' || message.trim().length === 0) {
       return res.status(400).json({ error: 'Missing or empty message' });
@@ -138,7 +174,11 @@ export default async function handler(req, res) {
       keyResult = await verifyAndDecrementKey(accessKey);
     } catch (redisErr) {
       console.error('verifyAndDecrementKey failed:', redisErr);
-      return res.status(503).json({ error: 'Błąd połączenia z bazą danych. Spróbuj ponownie.' });
+      return res.status(503).json({
+        error: lang === 'en'
+          ? 'Database connection error. Please try again.'
+          : 'Błąd połączenia z bazą danych. Spróbuj ponownie.',
+      });
     }
     if (!keyResult.valid) {
       return res.status(403).json({ error: 'Nieprawidłowy klucz', reason: keyResult.reason });
@@ -172,7 +212,11 @@ export default async function handler(req, res) {
       clearTimeout(timeoutId);
       if (fetchErr.name === 'AbortError') {
         await compensateKey(accessKey);
-        return res.status(504).json({ error: 'Anthropic API timeout' });
+        return res.status(504).json({
+          error: lang === 'en'
+            ? 'AI service timeout. Please try again.'
+            : 'Przekroczono czas odpowiedzi AI. Spróbuj ponownie.',
+        });
       }
       throw fetchErr;
     }

@@ -3,6 +3,6 @@
   "outputDirectory": "dist",
   "rewrites": [
     { "source": "/aktywacja", "destination": "/aktywacja/index.html" },
-    { "source": "/(.*)",      "destination": "/index.html" }
+    { "source": "/((?!api/|aktywacja/).*)", "destination": "/index.html" }
   ]
 }
