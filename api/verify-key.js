@@ -2,7 +2,7 @@
 // Validates a NF-XXXXX-XXXXX key and decrements queriesRemaining on success.
 // Env vars required: KV_REST_API_URL, KV_REST_API_TOKEN
 
-import { verifyAndDecrementKey } from './_verifyKeyLogic.js';
+import { getKeyStatus } from './_verifyKeyLogic.js';
 import { checkIpRateLimit } from './_redis.js';
 
 export default async function handler(req, res) {
@@ -32,7 +32,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ valid: false, reason: 'Nieprawidłowy klucz' });
     }
 
-    const result = await verifyAndDecrementKey(key);
+    const result = await getKeyStatus(key);
     return res.status(200).json(result);
 
   } catch (err) {

@@ -42,3 +42,21 @@ export async function verifyAndDecrementKey(key) {
 
   return { valid: true, queriesRemaining: result.queriesRemaining, packageType: result.packageType };
 }
+
+// Read-only status check — does NOT decrement queriesRemaining.
+// Used by /api/verify-key so that knowing someone's key can't burn their balance.
+export async function getKeyStatus(key) {
+  const raw = await withTimeout(redis.get(key), 5000, 'getKeyStatus');
+  if (!raw) return { valid: false, reason: 'Nieprawidłowy klucz' };
+
+  const rec = typeof raw === 'string' ? JSON.parse(raw) : raw;
+
+  if (typeof rec.expiresAt === 'string' && new Date().toISOString() > rec.expiresAt) {
+    return { valid: false, reason: 'Klucz wygasł' };
+  }
+  if ((rec.queriesRemaining ?? 0) <= 0) {
+    return { valid: false, reason: 'Wyczerpano limit zapytań' };
+  }
+
+  return { valid: true, queriesRemaining: rec.queriesRemaining, packageType: rec.packageType };
+}
