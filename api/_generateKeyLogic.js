@@ -18,7 +18,19 @@ export const PACKAGES = {
 
 export function generateKey() {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  const seg = () => Array.from(crypto.getRandomValues(new Uint8Array(5)), b => chars[b % chars.length]).join('');
+  // Largest multiple of chars.length that fits in a byte; bytes >= this are rejected
+  // to avoid modulo bias (36 chars -> reject bytes 252..255).
+  const cutoff = Math.floor(256 / chars.length) * chars.length;
+  const randChar = () => {
+    const buf = new Uint8Array(1);
+    let b;
+    do {
+      crypto.getRandomValues(buf);
+      b = buf[0];
+    } while (b >= cutoff);
+    return chars[b % chars.length];
+  };
+  const seg = () => Array.from({ length: 5 }, randChar).join('');
   return `NF-${seg()}-${seg()}`;
 }
 
@@ -67,13 +79,14 @@ local raw = redis.call('GET', KEYS[1])
 if not raw then return nil end
 local rec = cjson.decode(raw)
 rec.queriesRemaining = rec.queriesRemaining + tonumber(ARGV[1])
+-- Plain SET clears any 90-day exhaustion TTL — a topped-up key becomes long-lived again. Intentional.
 redis.call('SET', KEYS[1], cjson.encode(rec))
 return rec.queriesRemaining
 `;
 
 const LUA_SAVE_KEY = `
 redis.call('SET', KEYS[1], ARGV[1])
-redis.call('SET', KEYS[2], ARGV[2])
+redis.call('SET', KEYS[2], ARGV[2], 'EX', tonumber(ARGV[3]))
 return 1
 `;
 
@@ -143,11 +156,13 @@ export async function createAndDeliverKey({ packageType, customerEmail }) {
     createdAt: now.toISOString(),
   };
 
+  const EMAIL_MAPPING_TTL_SEC = 365 * 86_400;
+
   await withTimeout(
     redis.eval(
       LUA_SAVE_KEY,
       [key, `email:${customerEmail.toLowerCase()}`],
-      [JSON.stringify(record), key]
+      [JSON.stringify(record), key, String(EMAIL_MAPPING_TTL_SEC)]
     ),
     5000, 'save key'
   );
