@@ -892,42 +892,48 @@
 <div id="access-key-overlay" class="access-key-overlay hidden">
   <div class="access-key-box">
     <div class="brand-name" style="font-size:1.35rem;margin-bottom:6px">NarcFilter</div>
-    <p data-i18n="overlay_intro" style="color:var(--muted);font-size:0.88rem;margin-bottom:28px;line-height:1.5"></p>
-    <input type="text" id="overlay-key-input" class="input" placeholder="NF-XXXXX-XXXXX"
-           autocomplete="off" spellcheck="false"
-           style="letter-spacing:0.07em;text-transform:uppercase;text-align:center;margin-bottom:12px" />
-    <button id="btn-overlay-save" data-i18n="overlay_save" class="btn btn-primary btn-full"></button>
-    <p id="overlay-key-error" data-i18n="overlay_err" style="display:none;font-size:0.75rem;color:var(--err,#b03030);margin-top:8px;text-align:center;line-height:1.5"></p>
-    <p data-i18n="overlay_hint" style="font-size:0.75rem;color:var(--muted);margin-top:18px;text-align:center;line-height:1.6"></p>
-    <p id="overlay-legal-note-pl" style="font-size:0.72rem;color:var(--muted);margin-top:14px;text-align:center;line-height:1.55">
+    <p data-i18n="overlay_intro" style="color:var(--muted);font-size:0.88rem;margin-bottom:20px;line-height:1.5"></p>
+
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:8px">
+      <a href="https://buy.stripe.com/eVq28rcOi1gDfaL2tK6Ri07" target="_blank" rel="noopener" class="pkg-link">
+        10 analiz — Starter &nbsp;·&nbsp; <strong>9 zł</strong>
+      </a>
+      <a href="https://buy.stripe.com/4gM00j4hMcZlfaL5FW6Ri08" target="_blank" rel="noopener" class="pkg-link">
+        100 analiz — Standard &nbsp;·&nbsp; <strong>29 zł</strong>
+      </a>
+      <a href="https://buy.stripe.com/6oUfZh8y2f7t8Mn3xO6Ri09" target="_blank" rel="noopener" class="pkg-link pkg-featured">
+        500 analiz — Pro &nbsp;·&nbsp; <strong>59 zł</strong>
+      </a>
+    </div>
+
+    <details style="margin-top:18px">
+      <summary data-i18n="overlay_have_key" style="cursor:pointer;font-size:0.82rem;color:var(--teal-lt);text-align:center;list-style:none;-webkit-appearance:none;user-select:none;padding:6px 0"></summary>
+      <div style="margin-top:12px">
+        <input type="text" id="overlay-key-input" class="input" placeholder="NF-XXXXX-XXXXX"
+               autocomplete="off" spellcheck="false"
+               style="letter-spacing:0.07em;text-transform:uppercase;text-align:center;margin-bottom:12px" />
+        <button id="btn-overlay-save" class="btn btn-primary btn-full" data-i18n="overlay_save"></button>
+        <p id="overlay-key-error" data-i18n="overlay_err" style="display:none;font-size:0.75rem;color:var(--err,#b03030);margin-top:8px;text-align:center;line-height:1.5"></p>
+        <p data-i18n="overlay_hint" style="font-size:0.75rem;color:var(--muted);margin-top:14px;text-align:center;line-height:1.6"></p>
+      </div>
+    </details>
+
+    <p id="overlay-legal-note-pl" style="font-size:0.72rem;color:var(--muted);margin-top:16px;text-align:center;line-height:1.55">
       Wprowadzając klucz akceptujesz
       <a href="#" onclick="Legal.open('terms');return false;" style="color:var(--teal-lt);text-decoration:underline">Regulamin</a>
       i
       <a href="#" onclick="Legal.open('privacy');return false;" style="color:var(--teal-lt);text-decoration:underline">Politykę Prywatności</a>.
       Treść analizowanych wiadomości jest przesyłana do Anthropic Inc. (USA) wyłącznie na potrzeby analizy.
     </p>
-    <p id="overlay-legal-note-en" style="display:none;font-size:0.72rem;color:var(--muted);margin-top:14px;text-align:center;line-height:1.55">
+    <p id="overlay-legal-note-en" style="display:none;font-size:0.72rem;color:var(--muted);margin-top:16px;text-align:center;line-height:1.55">
       By entering your key you accept the
       <a href="#" onclick="Legal.open('terms');return false;" style="color:var(--teal-lt);text-decoration:underline">Terms of Service</a>
       and
       <a href="#" onclick="Legal.open('privacy');return false;" style="color:var(--teal-lt);text-decoration:underline">Privacy Policy</a>.
       Analyzed message content is sent to Anthropic Inc. (USA) solely for analysis.
     </p>
-    <details style="margin-top:20px">
-      <summary data-i18n="overlay_buy" style="cursor:pointer;font-size:0.78rem;color:var(--muted);text-align:center;list-style:none;-webkit-appearance:none;user-select:none;padding:4px 0"></summary>
-      <div style="display:flex;flex-direction:column;gap:8px;margin-top:12px">
-        <a href="https://buy.stripe.com/eVq28rcOi1gDfaL2tK6Ri07" target="_blank" rel="noopener" class="pkg-link">
-          10 analiz — Starter &nbsp;·&nbsp; <strong>9 zł</strong>
-        </a>
-        <a href="https://buy.stripe.com/4gM00j4hMcZlfaL5FW6Ri08" target="_blank" rel="noopener" class="pkg-link">
-          100 analiz — Standard &nbsp;·&nbsp; <strong>29 zł</strong>
-        </a>
-        <a href="https://buy.stripe.com/6oUfZh8y2f7t8Mn3xO6Ri09" target="_blank" rel="noopener" class="pkg-link pkg-featured">
-          500 analiz — Pro &nbsp;·&nbsp; 59 zł
-        </a>
-      </div>
-    </details>
-    <p style="margin-top:20px;font-size:0.75rem;text-align:center;line-height:1.6">
+
+    <p style="margin-top:18px;font-size:0.75rem;text-align:center;line-height:1.6">
       <a href="https://www.kompasrozwodowy.eu/" target="_blank" rel="noopener"
          style="color:var(--teal-lt);text-decoration:none;font-weight:600">
         www.kompasrozwodowy.eu
@@ -1005,6 +1011,7 @@ const TRANSLATIONS = {
     overlay_err:'Nieprawidłowy format. Sprawdź czy skopiowałaś/eś cały klucz z emaila.',
     overlay_hint:'Klucz dostępu otrzymasz emailem po zakupie pakietu. Możesz go też zmienić w zakładce Ustawienia.',
     overlay_buy:'Brak klucza? Kup pakiet',
+    overlay_have_key:'Mam już klucz dostępu',
     confirm_clear:'Wyczyścić cały dziennik? Tej operacji nie można cofnąć.',
     confirm_clear_all:'Usunąć wszystkie dane? Klucz API i cały dziennik zostaną usunięte. Tej operacji nie można cofnąć.',
     footer_privacy:'Polityka prywatności', footer_terms:'Regulamin',
@@ -1053,6 +1060,7 @@ const TRANSLATIONS = {
     overlay_err:'Invalid format. Make sure you copied the entire key from the email.',
     overlay_hint:'You will receive your access key by email after purchasing a package. You can also change it in the Settings tab.',
     overlay_buy:'No key? Buy a package',
+    overlay_have_key:'I already have an access key',
     confirm_clear:'Clear the entire log? This cannot be undone.',
     confirm_clear_all:'Delete all data? Access key and entire log will be removed. This cannot be undone.',
     footer_privacy:'Privacy Policy', footer_terms:'Terms',
@@ -1823,6 +1831,7 @@ function setupEvents() {
     if (!k) return;
     const errEl = UI.$('overlay-key-error');
     if (!/^NF-[A-Z0-9]+-[A-Z0-9]+$/.test(k)) {
+      document.querySelector('#access-key-overlay details').open = true;
       errEl.style.display = 'block';
       return;
     }
