@@ -1,7 +1,7 @@
 // NarcFilter — /api/key-info.js
 // Read-only key lookup — returns queriesRemaining without decrementing.
 
-import { redis, withTimeout } from './_redis.js';
+import { redis, withTimeout, checkIpRateLimit } from './_redis.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -9,6 +9,21 @@ export default async function handler(req, res) {
   }
 
   try {
+    // Per-IP rate limit
+    try {
+      const ipAllowed = await checkIpRateLimit(req, 'key-info', 30);
+      if (!ipAllowed) {
+        return res.status(429).json({
+          valid: false,
+          reason: 'Zbyt wiele żądań. Odczekaj minutę.',
+          retryAfter: 60,
+        });
+      }
+    } catch (ipErr) {
+      console.error('key-info IP rate limit failed (failing closed):', ipErr);
+      return res.status(503).json({ valid: false, reason: 'Chwilowy problem techniczny, spróbuj za chwilę.' });
+    }
+
     const { key } = req.body ?? {};
 
     if (!key || typeof key !== 'string' || !/^NF-[A-Z0-9]{5}-[A-Z0-9]{5}$/.test(key)) {

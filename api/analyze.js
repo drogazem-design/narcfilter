@@ -4,7 +4,7 @@
 
 import { verifyAndDecrementKey } from './_verifyKeyLogic.js';
 import { checkEnv } from './_checkEnv.js';
-import { redis, withTimeout } from './_redis.js';
+import { redis, withTimeout, checkIpRateLimit } from './_redis.js';
 
 const LUA_COMPENSATE = `
 local raw = redis.call('GET', KEYS[1])
@@ -139,6 +139,26 @@ export default async function handler(req, res) {
     // Validate access key format
     if (!accessKey || !/^NF-[A-Z0-9]{5}-[A-Z0-9]{5}$/.test(accessKey)) {
       return res.status(403).json({ error: 'Nieprawidłowy klucz', reason: 'Nieprawidłowy format klucza' });
+    }
+
+    // Per-IP rate limit (defends against key-guessing — runs before key-scoped limit)
+    try {
+      const ipAllowed = await checkIpRateLimit(req, 'analyze', 60);
+      if (!ipAllowed) {
+        return res.status(429).json({
+          error: lang === 'en'
+            ? 'Too many requests. Please wait a minute.'
+            : 'Zbyt wiele żądań. Odczekaj minutę.',
+          retryAfter: 60,
+        });
+      }
+    } catch (ipErr) {
+      console.error('analyze IP rate limit failed (failing closed):', ipErr);
+      return res.status(503).json({
+        error: lang === 'en'
+          ? 'Temporary issue, please try again shortly.'
+          : 'Chwilowy problem techniczny, spróbuj za chwilę.',
+      });
     }
 
     try {

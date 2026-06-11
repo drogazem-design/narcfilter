@@ -32,3 +32,22 @@ export async function incrWithExpiry(key, ttlSec, label = 'rate limit') {
     5000, label
   );
 }
+
+/**
+ * Extracts the client IP from Vercel's x-forwarded-for header.
+ * Returns 'unknown' if the header is absent.
+ */
+export function getClientIp(req) {
+  const forwardedFor = req.headers['x-forwarded-for'] ?? '';
+  return String(forwardedFor).split(',')[0].trim() || 'unknown';
+}
+
+/**
+ * Per-IP rate limit. Returns true if the request is allowed (count <= max).
+ * Uses a 60-second sliding window keyed by IP.
+ */
+export async function checkIpRateLimit(req, scope, max) {
+  const ip = getClientIp(req);
+  const count = await incrWithExpiry(`rate:ip:${scope}:${ip}`, 60, `${scope} ip rate limit`);
+  return count <= max;
+}
