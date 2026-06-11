@@ -250,7 +250,11 @@ export default async function handler(req, res) {
       if (anthropicRes.status === 529 || /overload/i.test(errMsg)) {
         return res.status(503).json({ error: 'overloaded' });
       }
-      return res.status(502).json({ error: errMsg || `Anthropic API error ${anthropicRes.status}` });
+      return res.status(502).json({
+        error: lang === 'en'
+          ? 'AI service error. Please try again.'
+          : 'Błąd usługi AI. Spróbuj ponownie.',
+      });
     }
 
     const anthropicData = await anthropicRes.json();
@@ -272,6 +276,6 @@ export default async function handler(req, res) {
 
   } catch (err) {
     console.error('analyze handler error:', err?.message, err?.stack);
-    return res.status(500).json({ error: 'Internal server error', detail: err?.message });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 }

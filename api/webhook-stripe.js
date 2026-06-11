@@ -41,6 +41,10 @@ const PAYMENT_LINK_MAP = {
   'plink_1TT0JKDg3rjklSS3hFN4Bp7o': 'starter',
   'plink_1TT0JUDg3rjklSS3Z5drAAz7': 'standard',
   'plink_1TT0JWDg3rjklSS3ioLl2rU7': 'pro',
+  // TODO: replace with the real Stripe payment_link id for the "Doładowanie / Add-on" product
+  // from the Stripe dashboard (Payment Links). Until then, addon purchases fall through to
+  // the "unknown payment_link" alert branch.
+  'plink_REPLACE_WITH_ADDON_LINK_ID': 'addon',
 };
 
 export default async function handler(req, res) {
